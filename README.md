@@ -8,11 +8,9 @@ O projeto pode ser aberto diretamente no navegador e publicado em serviços de h
 
 ## Demonstração
 
-🔗 [Ver repositório no GitHub](https://github.com/khaleesisaithe)
+🔗 [Ver portfólio ao vivo](https://khaleesi-portifolio.vercel.app/)
 
-<!-- Adicione aqui o link do portfólio publicado, quando disponível:
-🔗 [Ver portfólio online](https://seu-link-de-deploy.example )
--->
+🔗 [Ver repositório no GitHub](https://github.com/khaleesisaithe)
 
 ## ✨ Funcionalidades
 
