@@ -1,0 +1,1374 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Khaleesi Saithe — Ciência de Dados</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <!--
+      Estrutura do projeto: veja README.md na raiz para um guia completo
+      de "onde mexer em cada coisa". Resumo rápido:
+        css/style.css -> cores e visual
+        js/script.js  -> interatividade
+        assets/img/   -> imagens (foto do cracha)
+      Cada secao do body abaixo comeca com um comentario identificando o nome dela.
+    -->
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body data-theme="dark">
+    <div class="boot-screen" id="bootScreen">
+      <div class="boot-log" id="bootLog"></div>
+    </div>
+
+    <div class="sheet-bg" aria-hidden="true"></div>
+    <div class="space-decor" aria-hidden="true">
+      <span class="pixel-star star-a">✦</span>
+      <span class="pixel-star star-b">✦</span>
+      <span class="pixel-star star-c">+</span>
+      <span class="pixel-star star-d">✦</span>
+      <span class="pixel-star star-e">·</span>
+      <span class="pixel-star star-f">✦</span>
+      <span class="pixel-planet planet-a"></span>
+      <span class="pixel-planet planet-b"></span>
+      <span class="pixel-planet planet-c"></span>
+      <span class="pixel-planet planet-d"></span>
+      <span class="pixel-star star-g">✧</span>
+      <span class="pixel-star star-h">✦</span>
+      <span class="pixel-star star-i">+</span>
+      <span class="pixel-star star-j">✧</span>
+      <span class="pixel-star star-k">✦</span>
+      <span class="pixel-star star-l">·</span>
+      <span class="pixel-comet comet-a"></span>
+      <span class="pixel-comet comet-b"></span>
+      <span class="pixel-orbit orbit-a"></span>
+      <span class="pixel-orbit orbit-b"></span>
+      <span class="pixel-nebula nebula-a"></span>
+      <span class="pixel-nebula nebula-b"></span>
+    </div>
+    <div class="glow-orb glow-1" aria-hidden="true"></div>
+    <div class="glow-orb glow-2" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- floating pixel decorations — original shapes, inspired by a retro/pixel-terminal mood -->
+    <svg
+      class="float-deco legacy-deco deco-a pixel-icon"
+      width="40"
+      height="40"
+      viewBox="0 0 8 8"
+      style="top: 130px; right: 8%"
+      aria-hidden="true"
+    >
+      <g fill="var(--verified)">
+        <rect x="3" y="0" width="2" height="1" />
+        <rect x="2" y="1" width="1" height="1" />
+        <rect x="5" y="1" width="1" height="1" />
+        <rect x="1" y="2" width="1" height="4" />
+        <rect x="6" y="2" width="1" height="4" />
+        <rect x="2" y="2" width="4" height="4" fill="none" />
+        <rect x="2" y="6" width="1" height="1" />
+        <rect x="5" y="6" width="1" height="1" />
+        <rect x="3" y="7" width="2" height="1" />
+      </g>
+      <g fill="var(--paper)"><rect x="2" y="3" width="4" height="3" /></g>
+      <g fill="var(--verified)">
+        <rect x="3" y="4" width="1" height="1" />
+        <rect x="5" y="4" width="1" height="1" />
+      </g>
+    </svg>
+
+    <svg
+      class="float-deco legacy-deco deco-b pixel-icon"
+      width="30"
+      height="46"
+      viewBox="0 0 6 9"
+      style="top: 250px; right: 20%"
+      aria-hidden="true"
+    >
+      <g fill="var(--flag)">
+        <rect x="2" y="0" width="2" height="1" />
+        <rect x="1" y="1" width="4" height="1" />
+        <rect x="1" y="2" width="4" height="5" />
+        <rect x="0" y="7" width="6" height="1" />
+        <rect x="0" y="8" width="6" height="1" />
+      </g>
+      <g fill="var(--paper)"><rect x="2" y="3" width="2" height="1" /></g>
+    </svg>
+
+    <svg
+      class="float-deco legacy-deco deco-c pixel-icon"
+      width="26"
+      height="26"
+      viewBox="0 0 8 8"
+      style="top: 90px; left: 6%"
+      aria-hidden="true"
+    >
+      <polygon
+        points="0,0 0,7 2,5.4 3.2,8 4.4,7.4 3.2,5 6,5"
+        fill="var(--verified)"
+      />
+    </svg>
+
+    <svg
+      class="float-deco legacy-deco deco-d pixel-icon"
+      width="34"
+      height="34"
+      viewBox="0 0 8 8"
+      style="bottom: 70px; left: 9%"
+      aria-hidden="true"
+    >
+      <g fill="var(--flag)">
+        <rect x="0" y="0" width="8" height="8" />
+      </g>
+      <g fill="var(--paper)">
+        <rect x="1.2" y="1.2" width="4" height="2.2" />
+        <rect x="1.2" y="5" width="5.6" height="1.6" />
+      </g>
+      <g fill="var(--flag)"><rect x="2" y="2" width="1.6" height="1.2" /></g>
+    </svg>
+
+    <div class="formula-bar">
+      <div class="fb-cell">
+        <span class="fb-ref" id="fbRef">A1</span><span class="fb-fx">fx</span>
+      </div>
+      <div class="fb-formula">
+        <span id="fbFormula">=HERO("Khaleesi Saithe")</span>
+      </div>
+      <nav class="fb-nav">
+        <a href="#sobre">sobre</a>
+        <a href="#experiencia">experiência</a>
+        <a href="#projetos">projetos</a>
+        <a href="#stack">stack</a>
+        <a href="#conhecimentos">conhecimentos</a>
+        <a href="#trajetoria">trajetória</a>
+        <a href="#contato">contato</a>
+      </nav>
+      <div class="fb-tools">
+        <button
+          class="fb-icon-btn"
+          id="themeToggle"
+          title="Alternar tema"
+          aria-label="Alternar tema"
+        >
+          ◑
+        </button>
+        <button
+          class="fb-icon-btn fb-burger"
+          id="burgerBtn"
+          aria-label="Abrir menu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-nav" id="mobileNav">
+      <a href="#sobre">sobre</a>
+      <a href="#experiencia">experiência</a>
+      <a href="#projetos">projetos</a>
+      <a href="#stack">stack</a>
+      <a href="#conhecimentos">conhecimentos</a>
+      <a href="#trajetoria">trajetória</a>
+      <a href="#contato">contato</a>
+    </div>
+
+    <!-- ================= HERO ================= -->
+    <section
+      class="hero"
+      id="hero"
+      data-ref="A1"
+      data-formula='=HERO("Khaleesi Saithe")'
+    >
+      <div class="inner" style="width: 100%">
+        <div class="hero-top">
+          <div class="ledger-card">
+            <div class="ledger-row">
+              <div class="ledger-label">01 / NOME</div>
+              <div class="ledger-value">
+                <div class="name">
+                  <span class="typewriter" id="typeName">Khaleesi Saithe</span>
+                </div>
+                <div class="role">
+                  Em transição para Ciência de Dados — de conferir caixa a
+                  conferir dado.
+                </div>
+              </div>
+            </div>
+            <div class="ledger-row">
+              <div class="ledger-label">02 / STATUS</div>
+              <div class="ledger-value">
+                <span class="status-pill"
+                  ><span class="dot"></span>BUSCANDO VAGA EM CIÊNCIA DE
+                  DADOS</span
+                >
+              </div>
+            </div>
+            <div class="ledger-row">
+              <div class="ledger-label">03 / STACK</div>
+              <div
+                class="ledger-value"
+                style="
+                  font-family: var(--mono);
+                  font-size: 13px;
+                  color: var(--ink-soft);
+                "
+              >
+                Python · Pandas · Streamlit · Power BI · Git/GitHub
+              </div>
+            </div>
+            <div class="ledger-row">
+              <div class="ledger-label">04 / FORMAÇÃO</div>
+              <div
+                class="ledger-value"
+                style="
+                  font-family: var(--mono);
+                  font-size: 13px;
+                  color: var(--ink-soft);
+                "
+              >
+                Ciência de Dados — Estácio
+              </div>
+            </div>
+          </div>
+          <div class="id-badge">
+            <img
+              class="id-photo"
+              src="assets/img/id-photo.jpg"
+              alt="Foto de Khaleesi Saithe"
+            />
+            <div class="id-label">crachá / id</div>
+            <div class="id-name">Khaleesi Saithe</div>
+            <span class="id-stamp">CONFERIDO ✓</span>
+          </div>
+        </div>
+        <div class="hero-cta">
+          <a href="#projetos" class="btn fill">VER PROJETOS →</a>
+          <a href="#contato" class="btn ghost">FALAR COMIGO</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SOBRE ================= -->
+    <section id="sobre" data-ref="B4" data-formula="=SOBRE()">
+      <svg
+        class="float-deco legacy-deco deco-e pixel-icon"
+        width="28"
+        height="28"
+        viewBox="0 0 8 8"
+        aria-hidden="true"
+      >
+        <g fill="var(--verified)">
+          <rect x="1.1" y="0.1" width="0.7" height="1.1" />
+          <rect x="2.6" y="0" width="0.7" height="1.3" />
+          <rect x="1" y="2" width="5" height="4" />
+          <rect x="1" y="6" width="5" height="0.9" />
+          <rect x="6" y="2.6" width="1.3" height="2" />
+        </g>
+        <rect x="1.6" y="2.6" width="3.8" height="2.6" fill="var(--paper)" />
+        <rect x="6.3" y="2.9" width="0.7" height="1.4" fill="var(--paper)" />
+      </svg>
+
+      <div
+        class="pixel-stage section-pixel about-pixel-stage"
+        aria-hidden="true"
+      >
+        <img
+          class="pixel-art pixel-folder-small"
+          src="assets/img/pixel-folder.png"
+          alt=""
+        />
+        <span class="pixel-badge">DATA / 01</span>
+      </div>
+      <div class="inner reveal">
+        <span class="cellref">B4</span>
+        <div class="kicker">/* quem esta por tras de 0 e 1 */</div>
+        <h2>Da operação de loja para a análise de dados.</h2>
+        <div class="about-grid">
+          <div class="about-text">
+            <p>
+              Minha trajetória profissional começou no
+              <span class="hl">atendimento ao cliente</span>, onde atuei por
+              cerca de um ano e meio como operadora de telemarketing na Atento
+              Brasil, atendendo a conta da EDP. Foi nesse período que desenvolvi
+              habilidades de comunicação, resolução de problemas, atendimento
+              sob pressão e trabalho orientado a metas.
+            </p>
+
+            <p>
+              Em seguida, atuei como
+              <span class="hl">operadora de cartão de crédito</span> na Mazinni
+              Administrações e Empreitadas, trabalhando com prospecção,
+              atendimento, apresentação de serviços financeiros, análise e
+              encaminhamento de propostas de crédito. Essa experiência
+              fortaleceu minha atenção a detalhes, conferência de informações e
+              compreensão de processos comerciais e financeiros.
+            </p>
+
+            <p>
+              Atualmente, atuo na
+              <span class="hl">OXXO Brasil</span>, na área de operações de loja.
+              Minha rotina envolve atendimento ao cliente, operação de caixa,
+              abastecimento, organização da loja, controle de estoque e
+              validade, inventário e processos relacionados ao Food. Também
+              participo da organização de processos, acompanhamento de produtos,
+              controle de degelo e execução de ações promocionais.
+            </p>
+
+            <p>
+              Essa experiência operacional despertou ainda mais meu interesse
+              por
+              <span class="hl">tecnologia, automação e análise de dados</span>.
+              Atualmente curso
+              <span class="hl">Ciência de Dados na Estácio</span> e venho
+              construindo minha formação técnica de forma prática, estudando
+              Python, Pandas, análise de dados, Power BI, Git e GitHub, além de
+              fundamentos de redes e segurança da informação.
+            </p>
+
+            <p>
+              Fora da faculdade, desenvolvo projetos próprios para transformar
+              problemas reais em soluções tecnológicas. Entre eles está o
+              <span class="hl">FechaCaixa</span>, projeto inspirado em processos
+              de fechamento e conferência de caixa, conectando minha experiência
+              em operações de varejo com programação e automação.
+            </p>
+
+            <p>
+              Hoje, meu objetivo é unir
+              <span class="hl"
+                >experiência de negócio, programação e dados</span
+              >
+              para desenvolver soluções que não apenas organizem informações,
+              mas que ajudem a compreender problemas, identificar padrões e
+              apoiar decisões.
+            </p>
+          </div>
+          <div class="tape">
+            <h4>Resumo rápido</h4>
+            <div class="tape-row">
+              <span>Cargo atual</span><b>Atendente de Loja</b>
+            </div>
+            <div class="tape-row">
+              <span>Empresa atual</span><b>OXXO Brasil</b>
+            </div>
+            <div class="tape-row">
+              <span>Cargo anterior</span><b>Operadora de cartão</b>
+            </div>
+            <div class="tape-row">
+              <span>Empresa anterior</span><b>Mazinni - Sam´s Club</b>
+            </div>
+            <div class="tape-row"><span>Ensino médio</span><b>2019</b></div>
+            <div class="tape-row">
+              <span>Graduação</span><b>Ciência de Dados</b>
+            </div>
+            <div class="tape-row">
+              <span>Instituição</span><b>Estácio de Sá</b>
+            </div>
+            <div class="tape-row"><span>Previsão</span><b>Mai/2028</b></div>
+          </div>
+        </div>
+
+        <div class="about-stats">
+          <div class="about-stat">
+            <div class="about-stat-k">projects_built</div>
+            <div class="about-stat-v" data-count="5">0</div>
+            <div class="about-stat-label">PROJETOS PRÓPRIOS</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-k">core_stack</div>
+            <div class="about-stat-v" data-count="7">0</div>
+            <div class="about-stat-label">FERRAMENTAS PRINCIPAIS</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-k">osi_layers</div>
+            <div class="about-stat-v" data-count="7">0</div>
+            <div class="about-stat-label">CAMADAS OSI ESTUDADAS</div>
+          </div>
+          <div class="about-stat">
+            <div class="about-stat-k">caixas_fechados</div>
+            <div class="about-stat-v" data-count="100">0</div>
+            <div class="about-stat-label">% CONFERÊNCIAS SEM ERRO*</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= EXPERIÊNCIA ================= -->
+    <section
+      id="experiencia"
+      data-ref="B6"
+      data-formula="=EXPERIENCIA.LISTAR()"
+    >
+      <svg
+        class="float-deco legacy-deco deco-f pixel-icon"
+        width="22"
+        height="34"
+        viewBox="0 0 6 9"
+        aria-hidden="true"
+      >
+        <g fill="var(--flag)">
+          <rect x="1" y="0.4" width="4" height="0.6" />
+          <rect x="0.6" y="1" width="4.8" height="7" />
+          <rect x="1" y="8" width="4" height="0.5" />
+        </g>
+        <polygon
+          points="2.6,2.2 3.8,2.2 3,4.1 3.9,4.1 2.4,6.6 2.8,4.5 2,4.5"
+          fill="var(--paper)"
+        />
+      </svg>
+      <div class="inner reveal">
+        <span class="cellref">B6</span>
+        <div class="kicker">/* histórico profissional */</div>
+        <h2>Experiência & formação.</h2>
+
+        <div class="proj-card">
+          <div class="proj-head">
+            <h3>Atendente de Loja</h3>
+            <span class="proj-tag">AGO/2026 — ATUAL</span>
+          </div>
+          <div class="proj-body">
+            <p><b>OXXO Brasil</b></p>
+            <ul class="feat-list">
+              <li>Atendimento ao cliente e operação de caixa</li>
+              <li>Abastecimento, organização e reposição de produtos</li>
+              <li>Controle de estoque, validade e processos de degelo</li>
+              <li>Organização e acompanhamento da área de Food</li>
+              <li>
+                Participação em inventários, checklists e processos operacionais
+              </li>
+              <li>Execução de campanhas promocionais e organização da loja</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-head">
+            <h3>Operadora de Cartão de Crédito</h3>
+            <span class="proj-tag">JAN/2026 — JUN/2026</span>
+          </div>
+          <div class="proj-body">
+            <p><b>Mazinni Administrações e Empreitadas LTDA</b></p>
+            <ul class="feat-list">
+              <li>Prospecção e abordagem de clientes</li>
+              <li>Apresentação de benefícios e serviços financeiros</li>
+              <li>
+                Análise e encaminhamento de propostas para aprovação de crédito
+              </li>
+              <li>
+                Atendimento ao cliente: dúvidas, emissão de segunda via e
+                suporte geral
+              </li>
+              <li>Foco em excelência no atendimento e alcance de metas</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-head">
+            <h3>Operadora de Telemarketing</h3>
+            <span class="proj-tag">MAI/2022 — SET/2023</span>
+          </div>
+          <div class="proj-body">
+            <p><b>Atento Brasil S/A</b> — conta EDP</p>
+            <ul class="feat-list">
+              <li>
+                Tratamento de reclamações de clientes com empatia e compostura
+              </li>
+              <li>
+                Processamento de documentos e inserção de informações em bancos
+                de dados
+              </li>
+              <li>Cumprimento consistente de metas de curto e longo prazo</li>
+              <li>
+                Apoio à supervisão na identificação de problemas de fluxo de
+                trabalho e busca de soluções
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tape" style="margin-top: 8px">
+          <h4>Educação</h4>
+          <div class="tape-row">
+            <span>Ensino Médio Completo</span><b>2019</b>
+          </div>
+          <div class="tape-row">
+            <span>EE Prof. Pedro Mazza</span><b>Parque Santa Rita, SJC/SP</b>
+          </div>
+          <div class="tape-row">
+            <span>Graduação — Ciência de Dados</span><b>Em andamento</b>
+          </div>
+          <div class="tape-row">
+            <span>Estácio de Sá — EAD, polo SJC/SP</span
+            ><b>Previsão mai/2028</b>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROJETOS ================= -->
+    <!--
+      Cada .proj-card representa 1 repositório real do GitHub.
+      Estrutura de cada card:
+        .proj-head    -> nome do projeto + tags (categoria) + status
+        .proj-preview -> "telinha" de terminal falsa (100% CSS/HTML, sem imagem)
+                         só pra dar personalidade visual, simulando o projeto rodando
+        .proj-body    -> descrição, stack usada e links (GitHub / demo ao vivo)
+
+      Para adicionar um projeto novo: copie um bloco .proj-card inteiro,
+      troque o texto e o data-tag (usado pelo filtro). Se usar uma tag nova,
+      adicione também um botão em .filter-row.
+    -->
+    <section id="projetos" data-ref="C9" data-formula="=PROJETOS(5)">
+      <svg
+        class="float-deco legacy-deco deco-g pixel-icon"
+        width="30"
+        height="26"
+        viewBox="0 0 8 7"
+        aria-hidden="true"
+      >
+        <g fill="var(--verified)">
+          <rect x="0.4" y="1.4" width="3" height="1" />
+          <rect x="0.4" y="2.2" width="7.2" height="4.3" />
+        </g>
+        <rect x="1" y="2.9" width="6" height="3" fill="var(--paper)" />
+      </svg>
+
+      <div
+        class="pixel-stage section-pixel projects-pixel-stage"
+        aria-hidden="true"
+      >
+        <img
+          class="pixel-art pixel-can"
+          src="assets/img/pixel-energy-can.png"
+          alt=""
+        />
+        <img
+          class="pixel-art pixel-computer-small"
+          src="assets/img/pixel-computer.png"
+          alt=""
+        />
+        <span class="pixel-spark spark-one">✦</span>
+        <span class="pixel-spark spark-two">✦</span>
+      </div>
+      <div class="inner reveal">
+        <span class="cellref">C9</span>
+        <div class="kicker">/* projetos que já rodam */</div>
+        <h2>Ferramentas construídas a partir de problemas reais.</h2>
+        <p class="lede">
+          Nenhum projeto aqui nasceu de exercício de sala — todos vieram de um
+          problema operacional que eu já tinha visto de perto.
+        </p>
+
+        <div class="filter-row" id="filterRow">
+          <button class="filter-chip active" data-filter="ALL">TODOS</button>
+          <button class="filter-chip" data-filter="DADOS">DADOS</button>
+          <button class="filter-chip" data-filter="AUTOMAÇÃO">AUTOMAÇÃO</button>
+          <button class="filter-chip" data-filter="WEB">WEB</button>
+          <button class="filter-chip" data-filter="APRENDIZADO">
+            APRENDIZADO
+          </button>
+        </div>
+
+        <div id="projGrid">
+          <!-- 1) PDFTOOLKIT — projeto em produção, com deploy ao vivo -->
+          <div class="proj-card tilt-card" data-tag="DADOS">
+            <div class="proj-head">
+              <h3>PDFToolkit</h3>
+              <div class="proj-badges">
+                <span class="proj-tag">DADOS · AUTOMAÇÃO</span>
+                <span class="proj-status status-ativo">● ATIVO</span>
+              </div>
+            </div>
+
+            <!-- preview em estilo terminal (CSS puro) -->
+            <div class="proj-preview" aria-hidden="true">
+              <div class="preview-bar">
+                <span class="preview-dot d1"></span
+                ><span class="preview-dot d2"></span
+                ><span class="preview-dot d3"></span>
+                <span class="preview-title">app.py — streamlit</span>
+              </div>
+              <div class="preview-body">
+                <div class="preview-line">
+                  <span class="preview-prompt">$</span> streamlit run app.py
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; Relatorio_Vendas_Julho.pdf gerado com sucesso ✓
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; 3 arquivos consolidados (CSV, Excel, PDF)
+                </div>
+                <div class="preview-line">
+                  <span class="preview-cursor"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="proj-body">
+              <p>
+                Ferramenta em Python para gerar e cruzar relatórios de vendas em
+                PDF — pensada para quem, como eu já fui, precisa fechar e
+                conferir números todo santo dia.
+              </p>
+              <div class="stack-strip">
+                <span class="stack-chip">Python</span>
+                <span class="stack-chip">PyPDF2</span>
+                <span class="stack-chip">ReportLab</span>
+                <span class="stack-chip">Streamlit</span>
+                <span class="stack-chip">pandas</span>
+                <span class="stack-chip">openpyxl</span>
+              </div>
+              <ul class="feat-list">
+                <li>Geração manual de relatórios em PDF</li>
+                <li>
+                  Importação e consolidação de múltiplos arquivos (CSV, Excel,
+                  PDF)
+                </li>
+                <li>Gerenciamento de relatórios salvos — editar ou excluir</li>
+                <li>Interface interativa via Streamlit</li>
+              </ul>
+              <div class="proj-links">
+                <a
+                  href="https://github.com/khaleesisaithe/PDF-Toolkit-py"
+                  target="_blank"
+                  >Ver no GitHub ↗</a
+                >
+                <a href="https://criadordepdf.streamlit.app/" target="_blank"
+                  >Testar ao vivo ↗</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 2) PIXBEE-FECHACAIXA / CONTACAIXA — em desenvolvimento -->
+          <div class="proj-card tilt-card" data-tag="AUTOMAÇÃO">
+            <div class="proj-head">
+              <h3>
+                ContaCaixa <span class="proj-sub">(Pixbee-FechaCaixa)</span>
+              </h3>
+              <div class="proj-badges">
+                <span class="proj-tag">AUTOMAÇÃO</span>
+                <span class="proj-status status-dev">◐ EM DESENVOLVIMENTO</span>
+              </div>
+            </div>
+
+            <div class="proj-preview" aria-hidden="true">
+              <div class="preview-bar">
+                <span class="preview-dot d1"></span
+                ><span class="preview-dot d2"></span
+                ><span class="preview-dot d3"></span>
+                <span class="preview-title">fechamento.html — build</span>
+              </div>
+              <div class="preview-body">
+                <div class="preview-line">
+                  <span class="preview-prompt">$</span> npm run dev
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; contagem: R$ 1.284,50
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; diferença de caixa: R$ 0,00 ✓
+                </div>
+                <div class="preview-line preview-warn">
+                  &gt; [WIP] exportação em PDF...
+                </div>
+                <div class="preview-line">
+                  <span class="preview-cursor"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="proj-body">
+              <p>
+                Sistema web para contagem e fechamento de caixa de
+                estabelecimentos comerciais — calcula automaticamente moedas,
+                notas e formas de pagamento, reduzindo erros na conferência
+                diária. Nasceu direto da minha rotina em operação de caixa.
+              </p>
+              <div class="stack-strip">
+                <span class="stack-chip">HTML5</span>
+                <span class="stack-chip">CSS3</span>
+                <span class="stack-chip">JavaScript</span>
+                <span class="stack-chip">futuro: React</span>
+                <span class="stack-chip">futuro: Supabase</span>
+              </div>
+              <ul class="feat-list">
+                <li>Contagem de moedas, notas, PIX, débito e crédito</li>
+                <li>
+                  Sangria, suprimento de caixa e cálculo automático do total
+                </li>
+                <li>Comparação entre valor esperado e valor encontrado</li>
+                <li>Planejado: histórico, relatórios e exportação em PDF</li>
+              </ul>
+              <div class="proj-links">
+                <a
+                  href="https://github.com/Khaleesisaithe/Pixbee-FechaCaixa"
+                  target="_blank"
+                  >Ver no GitHub ↗</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 3) PYTHON-ESTUDOS — repositório de aprendizado contínuo -->
+          <div class="proj-card tilt-card" data-tag="APRENDIZADO">
+            <div class="proj-head">
+              <h3>Python-estudos</h3>
+              <div class="proj-badges">
+                <span class="proj-tag">APRENDIZADO</span>
+                <span class="proj-status status-learn">◐ EM ANDAMENTO</span>
+              </div>
+            </div>
+
+            <div class="proj-preview" aria-hidden="true">
+              <div class="preview-bar">
+                <span class="preview-dot d1"></span
+                ><span class="preview-dot d2"></span
+                ><span class="preview-dot d3"></span>
+                <span class="preview-title">python3 — REPL</span>
+              </div>
+              <div class="preview-body">
+                <div class="preview-line">
+                  <span class="preview-prompt">&gt;&gt;&gt;</span> import
+                  fundamentos, poo, arquivos
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; commit: "exercícios cap. 4 — dicionários" ✓
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; próximo módulo: pandas
+                </div>
+                <div class="preview-line">
+                  <span class="preview-cursor"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="proj-body">
+              <p>
+                Repositório onde documento minha evolução em Python de forma
+                progressiva — variáveis, tipos, estruturas de dados, POO e
+                exercícios, organizados por pastas e tudo versionado no Git.
+              </p>
+              <div class="stack-strip">
+                <span class="stack-chip">Python 3</span>
+                <span class="stack-chip">Git</span>
+                <span class="stack-chip">GitHub</span>
+                <span class="stack-chip">VS Code</span>
+                <span class="stack-chip">Codespaces</span>
+              </div>
+              <ul class="feat-list">
+                <li>Fundamentos, estruturas de dados e POO</li>
+                <li>Exercícios e desafios organizados por pasta</li>
+                <li>Base para Ciência de Dados, automação e APIs</li>
+              </ul>
+              <div class="proj-links">
+                <a
+                  href="https://github.com/Khaleesisaithe/Python-estudos"
+                  target="_blank"
+                  >Ver no GitHub ↗</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 4) MEU PRIMEIRO CONTATO COM HTML — marco / arquivado -->
+          <div class="proj-card tilt-card" data-tag="WEB">
+            <div class="proj-head">
+              <h3>Primeiro contato com HTML</h3>
+              <div class="proj-badges">
+                <span class="proj-tag">WEB</span>
+                <span class="proj-status status-done">✓ MARCO CONCLUÍDO</span>
+              </div>
+            </div>
+
+            <div class="proj-preview" aria-hidden="true">
+              <div class="preview-bar">
+                <span class="preview-dot d1"></span
+                ><span class="preview-dot d2"></span
+                ><span class="preview-dot d3"></span>
+                <span class="preview-title">index.html — live-server</span>
+              </div>
+              <div class="preview-body">
+                <div class="preview-line">
+                  <span class="preview-prompt">$</span> live-server .
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; servindo em http://localhost:5500
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; primeira &lt;h1&gt; renderizada com sucesso ✓
+                </div>
+                <div class="preview-line">
+                  <span class="preview-cursor"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="proj-body">
+              <p>
+                Meu primeiro contato com HTML — o projeto que marca o início da
+                minha jornada em desenvolvimento web, transformando curiosidade
+                em prática, linha por linha.
+              </p>
+              <div class="stack-strip">
+                <span class="stack-chip">HTML5</span>
+              </div>
+              <div class="proj-links">
+                <a
+                  href="https://github.com/Khaleesisaithe/Meu.site-primeiro-contato-HTML-"
+                  target="_blank"
+                  >Ver no GitHub ↗</a
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- 5) INTEGRA-OCO — primeiro projeto com HTML + CSS + JS -->
+          <div class="proj-card tilt-card" data-tag="WEB">
+            <div class="proj-head">
+              <h3>Integra-oCO</h3>
+              <div class="proj-badges">
+                <span class="proj-tag">WEB · APRENDIZADO</span>
+                <span class="proj-status status-learn">◐ APRENDIZADO</span>
+              </div>
+            </div>
+
+            <div class="proj-preview" aria-hidden="true">
+              <div class="preview-bar">
+                <span class="preview-dot d1"></span
+                ><span class="preview-dot d2"></span
+                ><span class="preview-dot d3"></span>
+                <span class="preview-title">script.js — live-server</span>
+              </div>
+              <div class="preview-body">
+                <div class="preview-line">
+                  <span class="preview-prompt">$</span> live-server .
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; HTML + CSS + JS integrados ✓
+                </div>
+                <div class="preview-line preview-out">
+                  &gt; lógica de interface funcionando
+                </div>
+                <div class="preview-line">
+                  <span class="preview-cursor"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="proj-body">
+              <p>
+                Meu primeiro projeto integrando HTML, CSS e JavaScript juntos —
+                um registro da minha prática de lógica e construção de
+                interfaces, em constante evolução.
+              </p>
+              <div class="stack-strip">
+                <span class="stack-chip">HTML5</span>
+                <span class="stack-chip">CSS3</span>
+                <span class="stack-chip">JavaScript</span>
+              </div>
+              <div class="proj-links">
+                <a
+                  href="https://github.com/Khaleesisaithe/Integra-oCO"
+                  target="_blank"
+                  >Ver no GitHub ↗</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="filter-empty" id="filterEmpty">
+          Nenhum projeto com essa tag ainda — mas tá vindo por aí.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= STACK ================= -->
+    <section id="stack" data-ref="D15" data-formula="=STACK.SOMA()">
+      <svg
+        class="float-deco legacy-deco deco-h pixel-icon"
+        width="34"
+        height="28"
+        viewBox="0 0 10 8"
+        aria-hidden="true"
+      >
+        <rect x="0" y="0" width="10" height="8" fill="var(--verified)" />
+        <rect x="0.6" y="1.6" width="8.8" height="5.8" fill="#0B0710" />
+        <g fill="#FF5F57"><rect x="0.8" y="0.5" width="0.6" height="0.6" /></g>
+        <g fill="#FEBC2E"><rect x="1.7" y="0.5" width="0.6" height="0.6" /></g>
+        <g fill="#28C840"><rect x="2.6" y="0.5" width="0.6" height="0.6" /></g>
+        <g fill="var(--flag)">
+          <rect x="1.3" y="3" width="0.5" height="1.4" />
+          <rect x="1.9" y="3.9" width="1.3" height="0.5" />
+          <rect x="3.6" y="4.1" width="1.4" height="0.5" />
+        </g>
+      </svg>
+      <div class="inner reveal">
+        <span class="cellref">D15</span>
+        <div class="kicker">/* o que já roda sem erro */</div>
+        <h2>Ferramentas do dia a dia.</h2>
+        <table class="stack-table" id="stackTable">
+          <tbody>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg"
+                  alt=""
+                  loading="lazy"
+                />Python
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="80"></div>
+                </div>
+              </td>
+              <td>80%</td>
+            </tr>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original.svg"
+                  alt=""
+                  loading="lazy"
+                />HTML5
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="60"></div>
+                </div>
+              </td>
+              <td>60%</td>
+            </tr>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original.svg"
+                  alt=""
+                  loading="lazy"
+                />CSS3
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="55"></div>
+                </div>
+              </td>
+              <td>55%</td>
+            </tr>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg"
+                  alt=""
+                  loading="lazy"
+                />JavaScript
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="48"></div>
+                </div>
+              </td>
+              <td>48%</td>
+            </tr>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/pandas/pandas-original.svg"
+                  alt=""
+                  loading="lazy"
+                />pandas
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="70"></div>
+                </div>
+              </td>
+              <td>70%</td>
+            </tr>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg"
+                  alt=""
+                  loading="lazy"
+                />Git / GitHub
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="75"></div>
+                </div>
+              </td>
+              <td>75%</td>
+            </tr>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://cdn.simpleicons.org/streamlit/D65CFF"
+                  alt=""
+                  loading="lazy"
+                />Streamlit
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="68"></div>
+                </div>
+              </td>
+              <td>68%</td>
+            </tr>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://cdn.simpleicons.org/powerbi/D65CFF"
+                  alt=""
+                  loading="lazy"
+                />Power BI
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="55"></div>
+                </div>
+              </td>
+              <td>55%</td>
+            </tr>
+            <tr>
+              <td>Redes (TCP/IP, OSI)</td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="50"></div>
+                </div>
+              </td>
+              <td>50%</td>
+            </tr>
+            <tr>
+              <td>Segurança da informação</td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="45"></div>
+                </div>
+              </td>
+              <td>45%</td>
+            </tr>
+            <tr>
+              <td class="tool-td">
+                <img
+                  class="tool-logo"
+                  src="https://raw.githubusercontent.com/devicons/devicon/master/icons/figma/figma-original.svg"
+                  alt=""
+                  loading="lazy"
+                />Figma
+              </td>
+              <td>
+                <div class="bar-track">
+                  <div class="bar-fill" data-w="22"></div>
+                </div>
+              </td>
+              <td>22%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p
+          style="
+            font-family: var(--mono);
+            font-size: 11.5px;
+            color: var(--ink-faint);
+            margin-top: 16px;
+          "
+        >
+          Nível autoavaliado — não é certificação.
+        </p>
+
+        <div class="tools-strip">
+          <span class="tool-chip"
+            ><img
+              class="ic"
+              src="https://raw.githubusercontent.com/devicons/devicon/master/icons/vscode/vscode-original.svg"
+              alt=""
+              loading="lazy"
+            />VS Code</span
+          >
+          <span class="tool-chip"
+            ><img
+              class="ic"
+              src="https://raw.githubusercontent.com/devicons/devicon/master/icons/github/github-original.svg"
+              alt=""
+              loading="lazy"
+            />GitHub Codespaces</span
+          >
+          <span class="tool-chip"
+            ><img
+              class="ic"
+              src="https://raw.githubusercontent.com/devicons/devicon/master/icons/figma/figma-original.svg"
+              alt=""
+              loading="lazy"
+            />Figma</span
+          >
+          <span class="tool-chip"
+            ><img
+              class="ic"
+              src="https://raw.githubusercontent.com/devicons/devicon/master/icons/azure/azure-original.svg"
+              alt=""
+              loading="lazy"
+            />Azure (estudando)</span
+          >
+          <span class="tool-chip"
+            ><img
+              class="ic"
+              src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg"
+              alt=""
+              loading="lazy"
+            />Python</span
+          >
+          <span class="tool-chip"
+            ><img
+              class="ic"
+              src="https://cdn.simpleicons.org/streamlit/D65CFF"
+              alt=""
+              loading="lazy"
+            />Streamlit</span
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONHECIMENTOS ================= -->
+    <section
+      id="conhecimentos"
+      data-ref="D18"
+      data-formula="=CONHECIMENTOS.LISTAR()"
+    >
+      <svg
+        class="float-deco legacy-deco deco-i pixel-icon"
+        width="26"
+        height="26"
+        viewBox="0 0 8 8"
+        aria-hidden="true"
+      >
+        <g fill="var(--verified)">
+          <rect x="2.4" y="1" width="0.8" height="2.4" />
+          <rect x="4.8" y="1" width="0.8" height="2.4" />
+          <rect x="2.4" y="0.6" width="3.2" height="0.8" />
+        </g>
+        <rect x="2" y="3" width="4" height="3.6" fill="var(--flag)" />
+        <rect x="3.5" y="4.2" width="1" height="1.6" fill="var(--paper)" />
+      </svg>
+      <div class="inner reveal">
+        <span class="cellref">D18</span>
+        <div class="kicker">/* fundamentos por trás do código */</div>
+        <h2>Redes e segurança — a base que sustenta os dados.</h2>
+        <p class="lede">
+          Antes de confiar em qualquer dashboard, gosto de entender como a
+          informação viaja e como ela é protegida no caminho.
+        </p>
+
+        <div class="know-grid">
+          <div class="know-card">
+            <h4>Modelo OSI — 7 camadas</h4>
+            <ol class="osi-list">
+              <li>Física</li>
+              <li>Enlace de Dados</li>
+              <li>Rede</li>
+              <li>Transporte</li>
+              <li>Sessão</li>
+              <li>Apresentação</li>
+              <li>Aplicação</li>
+            </ol>
+          </div>
+          <div class="know-card">
+            <h4>Segurança da informação — ISO/IEC 27002:2022</h4>
+            <div class="cia-row">
+              <div class="cia-item">
+                <b>Confidencialidade</b
+                ><span
+                  >Garantir que informações sejam acessadas somente por pessoas
+                  autorizadas.</span
+                >
+              </div>
+              <div class="cia-item">
+                <b>Integridade</b
+                ><span
+                  >Garantir que informações não sejam alteradas
+                  indevidamente.</span
+                >
+              </div>
+              <div class="cia-item">
+                <b>Disponibilidade</b
+                ><span
+                  >Garantir que sistemas e informações estejam acessíveis quando
+                  necessário.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="know-note">
+          <span>▹</span>
+          <span
+            ><b>Próximo passo:</b> aprofundar em Machine Learning e Business
+            Intelligence (Power BI, DAX, storytelling com dados) — conectando
+            programação, redes e segurança a decisões de negócio reais.</span
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TRAJETÓRIA ================= -->
+    <section
+      id="trajetoria"
+      data-ref="E24"
+      data-formula='=TRAJETORIA.ORDENAR("cronológica")'
+    >
+      <div class="inner reveal">
+        <span class="cellref">E24</span>
+        <div class="kicker">/* como cheguei até aqui */</div>
+        <h2>Minha jornada até aqui.</h2>
+        <div class="journey" id="journey">
+          <div class="j-item">
+            <div class="j-tag">2019</div>
+            <div class="j-title">Ensino médio completo</div>
+            <div class="j-desc">
+              EE Prof. Pedro Mazza, Parque Santa Rita — São José dos Campos/SP.
+            </div>
+          </div>
+          <div class="j-item">
+            <div class="j-tag">MAI/2022 — SET/2023</div>
+            <div class="j-title">
+              Operadora de Telemarketing — Atento Brasil / EDP
+            </div>
+            <div class="j-desc">
+              Tratamento de reclamações, inserção de dados em sistema e
+              cumprimento consistente de metas. Minha primeira experiência
+              formal de atendimento.
+            </div>
+          </div>
+          <div class="j-item">
+            <div class="j-tag">VIRADA</div>
+            <div class="j-title">Primeiro contato com tecnologia</div>
+            <div class="j-desc">
+              Comecei a estudar Git, GitHub e lógica de programação — trocando o
+              caderno de anotações por repositórios versionados, usando VS Code
+              e Codespaces no dia a dia.
+            </div>
+          </div>
+          <div class="j-item">
+            <div class="j-tag">PROGRAMAÇÃO</div>
+            <div class="j-title">Python como ferramenta principal</div>
+            <div class="j-desc">
+              Estruturas de dados, scripts e os primeiros projetos próprios:
+              Python-estudos e FechaCaixa.
+            </div>
+          </div>
+          <div class="j-item">
+            <div class="j-tag">DADOS & AUTOMAÇÃO</div>
+            <div class="j-title">De script a ferramenta real</div>
+            <div class="j-desc">
+              PDFToolkit nasce da junção de pandas, Streamlit e o problema que
+              eu já conhecia: relatórios de vendas.
+            </div>
+          </div>
+          <div class="j-item">
+            <div class="j-tag">INFRAESTRUTURA</div>
+            <div class="j-title">Redes e segurança da informação</div>
+            <div class="j-desc">
+              Modelo OSI, TCP/IP e os pilares da ISO/IEC 27002:2022 — entendendo
+              o caminho que o dado percorre antes de virar gráfico.
+            </div>
+          </div>
+          <div class="j-item">
+            <div class="j-tag">JAN/2026 — JUN/2026</div>
+            <div class="j-title">Operadora de Cartão de Crédito — Mazinni</div>
+            <div class="j-desc">
+              Prospecção, análise de propostas de crédito e atendimento ao
+              cliente — enquanto sigo em direção aos dados.
+            </div>
+          </div>
+          <div class="j-item">
+            <div class="j-tag">AGORA — PREVISÃO MAI/2028</div>
+            <div class="j-title">
+              Graduação em Ciência de Dados — Estácio de Sá
+            </div>
+            <div class="j-desc">
+              EAD, polo São José dos Campos/SP, em andamento — formalizando o
+              caminho para Data Analytics e Machine Learning.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTATO ================= -->
+    <section id="contato" data-ref="F32" data-formula="=CONTATO.ENVIAR()">
+      <div class="inner reveal">
+        <span class="cellref">F32</span>
+        <div class="kicker">/* fecha o caixa comigo */</div>
+        <h2>Vamos conversar?</h2>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <a href="mailto:khaleesisaithen@gmail.com"
+              >✉ khaleesisaithen@gmail.com <span class="arrow">→</span></a
+            >
+            <a href="https://github.com/khaleesisaithe" target="_blank"
+              >◐ github.com/khaleesisaithe <span class="arrow">→</span></a
+            >
+            <a href="https://linkedin.com/in/khaleesisaithe" target="_blank"
+              >◑ linkedin.com/in/khaleesisaithe <span class="arrow">→</span></a
+            >
+          </div>
+          <div class="signoff">
+            Aberta a oportunidades como analista, estagiária ou trainee em
+            Ciência de Dados / Data Analytics.<br /><br />
+            Se você chegou até aqui, já sabe que eu confiro tudo duas vezes —
+            inclusive esse convite.
+            <div class="stamp">CONFERIDO ✓</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      KHALEESI SAITHE — CIÊNCIA DE DADOS · CONSTRUÍDO LINHA POR LINHA.
+    </footer>
+
+    <!-- command palette -->
+    <button
+      id="cmdkTrigger"
+      class="cmdk-trigger"
+      title="Abrir terminal de auditoria (pressione /)"
+    >
+      &gt;_
+    </button>
+    <div id="cmdk" class="cmdk-overlay">
+      <div class="cmdk-box">
+        <div class="cmdk-input-row">
+          <span class="cmdk-prompt">$</span>
+          <input
+            id="cmdkInput"
+            type="text"
+            placeholder='digite "help"...'
+            autocomplete="off"
+          />
+        </div>
+        <div class="cmdk-output" id="cmdkOutput">
+          audit-terminal v1.1 — digite "help" para ver os comandos.
+        </div>
+      </div>
+    </div>
+
+    <script src="js/script.js" defer></script>
+  </body>
+</html>
