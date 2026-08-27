@@ -693,3 +693,91 @@ commandInput?.addEventListener("keydown", event => {
   if (commandOutput) commandOutput.textContent = `> ${raw}\n${commands[raw] || `comando não encontrado: "${raw}". digite "help".`}`;
   commandInput.value = "";
 });
+
+
+/* ---------- GSAP enhancement layer ---------- */
+(function initGSAPEnhancements() {
+  const gsapApi = window.gsap;
+  const ScrollTriggerApi = window.ScrollTrigger;
+  if (!gsapApi) return;
+  if (ScrollTriggerApi) gsapApi.registerPlugin(ScrollTriggerApi);
+
+  const media = gsapApi.matchMedia();
+  media.add({
+    reduceMotion: "(prefers-reduced-motion: reduce)",
+    desktop: "(min-width: 900px)",
+    mobile: "(max-width: 899px)"
+  }, context => {
+    const { reduceMotion, desktop } = context.conditions;
+    const heroParts = [
+      document.querySelector(".hero-masthead"),
+      document.querySelector(".hero-rail"),
+      document.querySelector(".hero-copy"),
+      document.querySelector(".hero-side"),
+      document.querySelector(".hero-bottomline")
+    ].filter(Boolean);
+
+    if (reduceMotion) {
+      gsapApi.set([...heroParts, ...document.querySelectorAll(".reveal, .j-item")], { autoAlpha: 1, x: 0, y: 0, clearProps: "transform,visibility" });
+      return;
+    }
+
+    const intro = gsapApi.timeline({ defaults: { duration: 0.72, ease: "power3.out" } });
+    intro
+      .fromTo(".hero-masthead", { autoAlpha: 0, y: -14 }, { autoAlpha: 1, y: 0 })
+      .fromTo(".hero-rail", { autoAlpha: 0, x: -26 }, { autoAlpha: 1, x: 0 }, "-=0.42")
+      .fromTo(".hero-copy", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0 }, "<0.08")
+      .fromTo(".hero-overline", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.48 }, "<0.16")
+      .fromTo(".hero-title-line", { autoAlpha: 0, yPercent: 115 }, { autoAlpha: 1, yPercent: 0, duration: 0.78, stagger: 0.1, ease: "power3.out" }, "<0.06")
+      .fromTo(".hero-lede", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.55 }, "<0.18")
+      .fromTo(".hero-cta", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "<0.14")
+      .fromTo(".hero-proof-row", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "<0.12")
+      .fromTo(".hero-side", { autoAlpha: 0, x: 30 }, { autoAlpha: 1, x: 0 }, "<0.08")
+      .fromTo(".hero-bottomline", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0 }, "-=0.32");
+
+    gsapApi.to(".id-badge", { y: -7, rotation: 1.2, duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
+    gsapApi.to(".motion-reel", { y: -4, duration: 2.2, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 0.28 });
+    gsapApi.to(".tool-svg", { y: -3, rotation: 3, duration: 1.55, repeat: -1, yoyo: true, ease: "sine.inOut", stagger: { each: 0.07, from: "random" } });
+
+    if (window.matchMedia("(pointer: fine)").matches) {
+      document.querySelectorAll(".hero-cta .btn").forEach(button => {
+        const xTo = gsapApi.quickTo(button, "x", { duration: 0.32, ease: "power3.out" });
+        const yTo = gsapApi.quickTo(button, "y", { duration: 0.32, ease: "power3.out" });
+        button.addEventListener("pointermove", event => {
+          const rect = button.getBoundingClientRect();
+          xTo((event.clientX - rect.left - rect.width / 2) * 0.08);
+          yTo((event.clientY - rect.top - rect.height / 2) * 0.08 - 2);
+        });
+        button.addEventListener("pointerleave", () => { xTo(0); yTo(0); });
+      });
+    }
+
+    if (ScrollTriggerApi) {
+      const revealTargets = [...document.querySelectorAll(".reveal")];
+      gsapApi.set(revealTargets, { autoAlpha: 0, y: 24 });
+      ScrollTriggerApi.batch(revealTargets, {
+        start: "top 86%",
+        once: true,
+        interval: 0.08,
+        batchMax: 4,
+        onEnter: batch => gsapApi.to(batch, { autoAlpha: 1, y: 0, duration: 0.72, stagger: 0.08, ease: "power3.out", overwrite: "auto" })
+      });
+
+      const journeyTargets = [...document.querySelectorAll(".j-item")];
+      gsapApi.set(journeyTargets, { autoAlpha: 0, y: 18 });
+      ScrollTriggerApi.batch(journeyTargets, {
+        start: "top 88%",
+        once: true,
+        interval: 0.06,
+        onEnter: batch => gsapApi.to(batch, { autoAlpha: 1, y: 0, duration: 0.62, stagger: 0.07, ease: "power2.out", overwrite: "auto" })
+      });
+
+      if (desktop) {
+        gsapApi.to(".hero-rail", { y: -18, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 } });
+        gsapApi.to(".hero-side", { y: 18, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 } });
+        gsapApi.to(".hero-copy h1", { y: -10, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 } });
+      }
+      ScrollTriggerApi.refresh();
+    }
+  });
+})();

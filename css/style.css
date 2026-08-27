@@ -589,3 +589,16 @@ footer { display: flex; justify-content: space-between; gap: 20px; padding: 28px
   .id-badge, .motion-reel, .tool-icon svg { animation: none !important; }
   .j-item { opacity: 1; transform: none; }
 }
+
+
+/* GSAP hero line choreography */
+.hero-title-line { display: block; will-change: transform, opacity; }
+.hero h1 .hero-title-line { overflow: hidden; }
+.hero h1 .hero-title-line em { display: block; }
+.hero-copy, .hero-rail, .hero-side, .hero-bottomline, .hero-masthead { will-change: transform, opacity; }
+@media (max-width: 760px) {
+  .hero-title-line { white-space: normal; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-line, .hero-copy, .hero-rail, .hero-side, .hero-bottomline, .hero-masthead { will-change: auto; }
+}
