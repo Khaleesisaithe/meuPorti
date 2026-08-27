@@ -233,6 +233,118 @@ function startSignalCanvas() {
 }
 startSignalCanvas();
 
+/* ---------- motion reel: lightweight video-like field ---------- */
+function startMotionCanvas() {
+  const canvas = document.getElementById("motionCanvas");
+  if (!(canvas instanceof HTMLCanvasElement)) return;
+  const context = canvas.getContext("2d");
+  if (!context) return;
+  const nodes = Array.from({ length: 18 }, (_, index) => ({
+    seed: index * 1.87,
+    radius: 1.4 + (index % 4) * 0.8,
+    speed: 0.00035 + (index % 5) * 0.00008,
+  }));
+  const resize = () => {
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+    const width = canvas.clientWidth || 560;
+    const height = canvas.clientHeight || 150;
+    canvas.width = Math.floor(width * ratio);
+    canvas.height = Math.floor(height * ratio);
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  };
+  const draw = timestamp => {
+    const width = canvas.clientWidth || 560;
+    const height = canvas.clientHeight || 150;
+    const time = timestamp || 0;
+    context.clearRect(0, 0, width, height);
+    const gradient = context.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "rgba(126, 34, 206, .58)");
+    gradient.addColorStop(.5, "rgba(168, 85, 247, .22)");
+    gradient.addColorStop(1, "rgba(217, 70, 166, .42)");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+    context.strokeStyle = "rgba(245, 208, 254, .12)";
+    context.lineWidth = 1;
+    for (let x = 24; x < width; x += 42) {
+      context.beginPath();
+      context.moveTo(x, 0);
+      context.lineTo(x, height);
+      context.stroke();
+    }
+    for (let y = 24; y < height; y += 30) {
+      context.beginPath();
+      context.moveTo(0, y);
+      context.lineTo(width, y);
+      context.stroke();
+    }
+    const points = 44;
+    const trace = (offset, amplitude, color, speed) => {
+      context.beginPath();
+      for (let index = 0; index <= points; index += 1) {
+        const x = (index / points) * width;
+        const wave = Math.sin(index * .54 + time * speed) * amplitude + Math.sin(index * .17 - time * speed * .62) * amplitude * .45;
+        const y = height * .56 + wave + offset;
+        if (index === 0) context.moveTo(x, y); else context.lineTo(x, y);
+      }
+      context.strokeStyle = color;
+      context.lineWidth = 1.5;
+      context.stroke();
+    };
+    trace(-16, 15, "rgba(255, 232, 255, .92)", .0022);
+    trace(4, 22, "rgba(255, 117, 195, .82)", .0017);
+    trace(23, 12, "rgba(192, 132, 252, .8)", .0028);
+    nodes.forEach(node => {
+      const phase = time * node.speed + node.seed;
+      const x = ((phase * 92) % (width + 42)) - 21;
+      const y = height * .5 + Math.sin(phase * 1.6) * height * .32;
+      const glow = context.createRadialGradient(x, y, 0, x, y, 14 + node.radius * 3);
+      glow.addColorStop(0, "rgba(255, 117, 195, .9)");
+      glow.addColorStop(1, "rgba(255, 117, 195, 0)");
+      context.fillStyle = glow;
+      context.beginPath();
+      context.arc(x, y, 14 + node.radius * 3, 0, Math.PI * 2);
+      context.fill();
+      context.fillStyle = "#f5d0fe";
+      context.beginPath();
+      context.arc(x, y, node.radius, 0, Math.PI * 2);
+      context.fill();
+    });
+    if (!prefersReducedMotion) window.requestAnimationFrame(draw);
+  };
+  window.addEventListener("resize", resize, { passive: true });
+  resize();
+  draw(0);
+}
+startMotionCanvas();
+
+/* ---------- infinite marquee ---------- */
+const marqueeBand = document.querySelector(".marquee-band");
+const marqueeTrack = document.querySelector(".marquee-track");
+const marqueeSet = marqueeTrack?.querySelector(".marquee-set");
+let marqueeOffset = 0;
+let marqueeLoopWidth = 0;
+let marqueePaused = prefersReducedMotion;
+let marqueeLastTimestamp = 0;
+const measureMarquee = () => {
+  if (marqueeSet) marqueeLoopWidth = marqueeSet.getBoundingClientRect().width;
+};
+const animateMarquee = timestamp => {
+  if (!marqueeLastTimestamp) marqueeLastTimestamp = timestamp;
+  const delta = Math.min(timestamp - marqueeLastTimestamp, 48);
+  marqueeLastTimestamp = timestamp;
+  if (marqueeTrack && marqueeLoopWidth > 0 && !marqueePaused) {
+    marqueeOffset -= delta * 0.052;
+    if (Math.abs(marqueeOffset) >= marqueeLoopWidth) marqueeOffset += marqueeLoopWidth;
+    marqueeTrack.style.transform = `translate3d(${marqueeOffset}px, 0, 0)`;
+  }
+  window.requestAnimationFrame(animateMarquee);
+};
+measureMarquee();
+window.addEventListener("resize", measureMarquee, { passive: true });
+marqueeBand?.addEventListener("mouseenter", () => { marqueePaused = true; });
+marqueeBand?.addEventListener("mouseleave", () => { marqueePaused = prefersReducedMotion; });
+window.requestAnimationFrame(animateMarquee);
+
 /* ---------- scroll progress ---------- */
 const scrollProgress = document.getElementById("scrollProgress");
 const updateProgress = () => {
@@ -450,34 +562,64 @@ experienceTriggers.forEach(trigger => {
 modalClose?.addEventListener("click", closeExperienceModal);
 experienceModal?.querySelector("[data-modal-close]")?.addEventListener("click", closeExperienceModal);
 
-/* ---------- tools carousel ---------- */
+/* ---------- tools carousel: seamless infinite rail ---------- */
 const toolsRail = document.getElementById("toolsRail");
 const railControls = document.querySelectorAll("[data-rail-direction]");
-const toolCards = document.querySelectorAll(".tool-card");
+const originalToolCards = toolsRail ? [...toolsRail.querySelectorAll(".tool-card")] : [];
+let railLoopPoint = 0;
+let railPaused = prefersReducedMotion;
+let railAnimationFrame = null;
+let railLastTimestamp = 0;
+
+const measureRailLoop = () => {
+  if (!toolsRail || originalToolCards.length === 0) return;
+  const firstClone = toolsRail.querySelector(".tool-card[data-clone=\"true\"]");
+  if (firstClone) railLoopPoint = Math.max(1, firstClone.offsetLeft - originalToolCards[0].offsetLeft);
+};
+
+if (toolsRail && originalToolCards.length) {
+  const clones = originalToolCards.map(card => {
+    const clone = card.cloneNode(true);
+    clone.dataset.clone = "true";
+    clone.setAttribute("aria-hidden", "true");
+    clone.setAttribute("tabindex", "-1");
+    clone.querySelectorAll("a").forEach(link => link.setAttribute("tabindex", "-1"));
+    return clone;
+  });
+  toolsRail.append(...clones);
+  window.requestAnimationFrame(measureRailLoop);
+}
+
 const scrollTools = direction => {
   if (!toolsRail) return;
   const amount = Math.max(190, Math.round(toolsRail.clientWidth * 0.72));
   toolsRail.scrollBy({ left: direction * amount, behavior: prefersReducedMotion ? "auto" : "smooth" });
 };
 railControls.forEach(control => control.addEventListener("click", () => scrollTools(control.dataset.railDirection === "next" ? 1 : -1)));
-let railTimer = null;
-const stopRail = () => { if (railTimer) window.clearInterval(railTimer); railTimer = null; };
-const startRail = () => {
-  if (!toolsRail || prefersReducedMotion || railTimer) return;
-  railTimer = window.setInterval(() => {
-    const atEnd = toolsRail.scrollLeft + toolsRail.clientWidth >= toolsRail.scrollWidth - 8;
-    if (atEnd) toolsRail.scrollTo({ left: 0, behavior: "smooth" });
-    else scrollTools(1);
-  }, 3200);
+
+const stopRail = () => { railPaused = true; };
+const startRail = () => { if (!prefersReducedMotion) railPaused = false; };
+const animateRail = timestamp => {
+  if (!railLastTimestamp) railLastTimestamp = timestamp;
+  const delta = Math.min(timestamp - railLastTimestamp, 48);
+  railLastTimestamp = timestamp;
+  if (toolsRail && !railPaused && railLoopPoint > 0) {
+    toolsRail.scrollLeft += delta * 0.045;
+    if (toolsRail.scrollLeft >= railLoopPoint) toolsRail.scrollLeft -= railLoopPoint;
+    if (toolsRail.scrollLeft < 0) toolsRail.scrollLeft += railLoopPoint;
+  }
+  railAnimationFrame = window.requestAnimationFrame(animateRail);
 };
+railAnimationFrame = window.requestAnimationFrame(animateRail);
+window.addEventListener("resize", measureRailLoop, { passive: true });
 toolsRail?.addEventListener("mouseenter", stopRail);
 toolsRail?.addEventListener("mouseleave", startRail);
 toolsRail?.addEventListener("focusin", stopRail);
 toolsRail?.addEventListener("focusout", event => { if (!toolsRail.contains(event.relatedTarget)) startRail(); });
 toolsRail?.addEventListener("touchstart", stopRail, { passive: true });
-toolsRail?.addEventListener("touchend", () => window.setTimeout(startRail, 2600), { passive: true });
-toolCards.forEach(card => card.addEventListener("dragstart", event => event.preventDefault()));
-startRail();
+toolsRail?.addEventListener("touchend", () => window.setTimeout(startRail, 1300), { passive: true });
+toolsRail?.addEventListener("wheel", stopRail, { passive: true });
+originalToolCards.forEach(card => card.addEventListener("dragstart", event => event.preventDefault()));
 
 /* ---------- formula bar and active navigation ---------- */
 const sections = document.querySelectorAll("section[data-ref]");
