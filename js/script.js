@@ -79,13 +79,13 @@ function startShader() {
       float wave = sin(length(p + pointer * 0.2) * 15.0 - time * 4.0 + field * 3.0);
       float pulse = smoothstep(0.75, 0.08, abs(wave) * 0.34 + length(p) * 0.3);
       float glow = smoothstep(0.58, 0.05, length(p - vec2(0.2, -0.24))) * 0.45;
-      vec3 green = vec3(0.77, 0.95, 0.24);
-      vec3 coral = vec3(1.0, 0.28, 0.19);
-      vec3 violet = vec3(0.32, 0.23, 0.70);
-      vec3 color = mix(violet, green, clamp(field + pulse * 0.4, 0.0, 1.0));
-      color = mix(color, coral, glow);
+      vec3 purple = vec3(0.43, 0.08, 0.78);
+      vec3 magenta = vec3(1.0, 0.22, 0.62);
+      vec3 lilac = vec3(0.74, 0.40, 1.0);
+      vec3 color = mix(purple, lilac, clamp(field + pulse * 0.42, 0.0, 1.0));
+      color = mix(color, magenta, glow);
       float vignette = smoothstep(1.2, 0.15, length(p));
-      gl_FragColor = vec4(color * vignette * 0.20, vignette * 0.62);
+      gl_FragColor = vec4(color * vignette * 0.52, vignette * 0.82);
     }
   `;
 
@@ -176,7 +176,7 @@ function startSignalCanvas() {
     }
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, width, height);
-    context.strokeStyle = "rgba(197, 242, 62, .10)";
+    context.strokeStyle = "rgba(168, 85, 247, .16)";
     context.lineWidth = 1;
     for (let x = 16; x < width; x += 44) {
       context.beginPath();
@@ -205,22 +205,22 @@ function startSignalCanvas() {
       context.lineWidth = 1.5;
       context.stroke();
     };
-    drawLine(0, "#c5f23e", 160);
-    drawLine(20, "rgba(169, 140, 255, .68)", 110);
-    drawLine(-17, "rgba(255, 118, 94, .65)", 80);
+    drawLine(0, "#a855f7", 160);
+    drawLine(20, "rgba(192, 132, 252, .78)", 110);
+    drawLine(-17, "rgba(255, 117, 195, .78)", 80);
 
     const last = points[points.length - 1];
     const lastX = 17 + (points.length - 1) * step;
     const lastY = baseline - (last.value - 0.45) * 160;
-    context.fillStyle = "#c5f23e";
+    context.fillStyle = "#a855f7";
     context.beginPath();
     context.arc(lastX, lastY, 3.5 + Math.sin(frame * 0.08) * 1.2, 0, Math.PI * 2);
     context.fill();
     context.font = "10px DM Mono, monospace";
-    context.fillStyle = "rgba(245, 239, 227, .5)";
+    context.fillStyle = "rgba(247, 239, 255, .58)";
     context.fillText("signal / 76", 17, 22);
-    context.fillStyle = "#c5f23e";
-    context.fillText("BUY", width - 45, 22);
+    context.fillStyle = "#a855f7";
+    context.fillText("LIVE", width - 45, 22);
 
     if (!prefersReducedMotion) {
       points.shift();
@@ -362,6 +362,123 @@ if (!prefersReducedMotion && window.matchMedia("(pointer: fine)").matches) {
   });
 }
 
+/* ---------- experience details modal ---------- */
+const experienceData = {
+  oxxo: {
+    ref: "B6 / 01",
+    period: "AGO/2026 — ATUAL",
+    title: "Atendente de Loja",
+    company: "OXXO Brasil",
+    location: "São José dos Campos / SP",
+    responsibilities: [
+      "Operação de caixa, atendimento e conferência de valores.",
+      "Controle de estoque, inventário, Food e organização de loja.",
+      "Execução de checklists e acompanhamento dos processos de abertura e fechamento.",
+    ],
+    connection: "Essa vivência me dá contato direto com rotinas, divergências, conferências e decisões rápidas. É o contexto que orienta o Fecha Caixa e meu interesse por ferramentas que reduzem retrabalho.",
+  },
+  mazinni: {
+    ref: "B6 / 02",
+    period: "JAN/2026 — JUN/2026",
+    title: "Operadora de Cartão de Crédito",
+    company: "Mazinni Administrações e Empreitadas LTDA",
+    location: "Serviços financeiros",
+    responsibilities: [
+      "Prospecção e atendimento de clientes em serviços financeiros.",
+      "Análise de propostas, organização de informações e acompanhamento de solicitações.",
+      "Comunicação de condições e orientação durante o processo de contratação.",
+    ],
+    connection: "A experiência fortaleceu minha leitura de propostas, atenção a detalhes e capacidade de explicar informações financeiras com clareza — habilidades essenciais para transformar dados em decisão.",
+  },
+  atento: {
+    ref: "B6 / 03",
+    period: "MAI/2022 — SET/2023",
+    title: "Operadora de Telemarketing",
+    company: "Atento Brasil S/A",
+    location: "Conta EDP",
+    responsibilities: [
+      "Tratamento de reclamações e atendimento em diferentes contextos.",
+      "Registro estruturado de informações e histórico em sistema.",
+      "Acompanhamento de metas e apoio à melhoria de fluxo de atendimento.",
+    ],
+    connection: "Foi onde aprendi a ouvir antes de responder, registrar o problema de forma estruturada e trabalhar com volume e metas. Hoje aplico essa visão ao pensar em produtos e análises mais úteis.",
+  },
+};
+const experienceModal = document.getElementById("experienceModal");
+const experienceTriggers = document.querySelectorAll(".experience-trigger");
+const modalClose = document.getElementById("modalClose");
+const modalRef = document.getElementById("modalRef");
+const modalPeriod = document.getElementById("modalPeriod");
+const modalTitle = document.getElementById("modalTitle");
+const modalCompany = document.getElementById("modalCompany");
+const modalList = document.getElementById("modalList");
+const modalConnection = document.getElementById("modalConnection");
+let lastExperienceFocus = null;
+const closeExperienceModal = () => {
+  if (!experienceModal) return;
+  experienceModal.hidden = true;
+  document.body.classList.remove("modal-open");
+  lastExperienceFocus?.focus();
+};
+const openExperienceModal = key => {
+  const data = experienceData[key];
+  if (!data || !experienceModal) return;
+  lastExperienceFocus = document.activeElement;
+  modalRef.textContent = data.ref;
+  modalPeriod.textContent = data.period;
+  modalTitle.textContent = data.title;
+  modalCompany.innerHTML = `<b>${data.company}</b> · ${data.location}`;
+  modalList.replaceChildren(...data.responsibilities.map(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    return li;
+  }));
+  modalConnection.textContent = data.connection;
+  experienceModal.hidden = false;
+  document.body.classList.add("modal-open");
+  modalClose?.focus();
+};
+experienceTriggers.forEach(trigger => {
+  trigger.addEventListener("click", () => openExperienceModal(trigger.dataset.experience));
+  trigger.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openExperienceModal(trigger.dataset.experience);
+    }
+  });
+});
+modalClose?.addEventListener("click", closeExperienceModal);
+experienceModal?.querySelector("[data-modal-close]")?.addEventListener("click", closeExperienceModal);
+
+/* ---------- tools carousel ---------- */
+const toolsRail = document.getElementById("toolsRail");
+const railControls = document.querySelectorAll("[data-rail-direction]");
+const toolCards = document.querySelectorAll(".tool-card");
+const scrollTools = direction => {
+  if (!toolsRail) return;
+  const amount = Math.max(190, Math.round(toolsRail.clientWidth * 0.72));
+  toolsRail.scrollBy({ left: direction * amount, behavior: prefersReducedMotion ? "auto" : "smooth" });
+};
+railControls.forEach(control => control.addEventListener("click", () => scrollTools(control.dataset.railDirection === "next" ? 1 : -1)));
+let railTimer = null;
+const stopRail = () => { if (railTimer) window.clearInterval(railTimer); railTimer = null; };
+const startRail = () => {
+  if (!toolsRail || prefersReducedMotion || railTimer) return;
+  railTimer = window.setInterval(() => {
+    const atEnd = toolsRail.scrollLeft + toolsRail.clientWidth >= toolsRail.scrollWidth - 8;
+    if (atEnd) toolsRail.scrollTo({ left: 0, behavior: "smooth" });
+    else scrollTools(1);
+  }, 3200);
+};
+toolsRail?.addEventListener("mouseenter", stopRail);
+toolsRail?.addEventListener("mouseleave", startRail);
+toolsRail?.addEventListener("focusin", stopRail);
+toolsRail?.addEventListener("focusout", event => { if (!toolsRail.contains(event.relatedTarget)) startRail(); });
+toolsRail?.addEventListener("touchstart", stopRail, { passive: true });
+toolsRail?.addEventListener("touchend", () => window.setTimeout(startRail, 2600), { passive: true });
+toolCards.forEach(card => card.addEventListener("dragstart", event => event.preventDefault()));
+startRail();
+
 /* ---------- formula bar and active navigation ---------- */
 const sections = document.querySelectorAll("section[data-ref]");
 const formulaRef = document.getElementById("fbRef");
@@ -407,7 +524,7 @@ document.addEventListener("keydown", event => {
     event.preventDefault();
     openCommandPalette();
   }
-  if (event.key === "Escape") { closeCommandPalette(); closeMobileNav(); }
+  if (event.key === "Escape") { closeCommandPalette(); closeMobileNav(); closeExperienceModal(); }
 });
 commandInput?.addEventListener("keydown", event => {
   if (event.key !== "Enter") return;
