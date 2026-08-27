@@ -55,6 +55,7 @@ function startShader() {
     uniform float u_time;
     uniform vec2 u_resolution;
     uniform vec2 u_pointer;
+    uniform float u_scroll;
     varying vec2 v_uv;
 
     float hash(vec2 p) {
@@ -75,7 +76,9 @@ function startShader() {
       vec2 pointer = u_pointer - 0.5;
       pointer.x *= u_resolution.x / max(u_resolution.y, 1.0);
       float time = u_time * 0.08;
-      float field = noise(p * 2.2 + vec2(time, -time * 0.6));
+      float scroll = u_scroll * 0.0008;
+      p += vec2(sin(scroll * 0.7) * 0.04, cos(scroll) * 0.025);
+      float field = noise(p * 2.2 + vec2(time + scroll, -time * 0.6 + scroll * 0.35));
       float wave = sin(length(p + pointer * 0.2) * 15.0 - time * 4.0 + field * 3.0);
       float pulse = smoothstep(0.75, 0.08, abs(wave) * 0.34 + length(p) * 0.3);
       float glow = smoothstep(0.58, 0.05, length(p - vec2(0.2, -0.24))) * 0.45;
@@ -128,7 +131,9 @@ function startShader() {
   const timeLocation = gl.getUniformLocation(program, "u_time");
   const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
   const pointerLocation = gl.getUniformLocation(program, "u_pointer");
+  const scrollLocation = gl.getUniformLocation(program, "u_scroll");
   const pointer = { x: 0.5, y: 0.5 };
+  let scrollPosition = window.scrollY || 0;
 
   const resize = () => {
     const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -141,181 +146,20 @@ function startShader() {
     pointer.x = event.clientX / Math.max(window.innerWidth, 1);
     pointer.y = 1 - event.clientY / Math.max(window.innerHeight, 1);
   }, { passive: true });
+  window.addEventListener("scroll", () => { scrollPosition = window.scrollY || 0; }, { passive: true });
   resize();
 
   const render = timestamp => {
     gl.uniform1f(timeLocation, timestamp * 0.001);
     gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
     gl.uniform2f(pointerLocation, pointer.x, pointer.y);
+    gl.uniform1f(scrollLocation, scrollPosition);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     if (!prefersReducedMotion) window.requestAnimationFrame(render);
   };
   window.requestAnimationFrame(render);
 }
 startShader();
-
-/* ---------- animated signal window ---------- */
-function startSignalCanvas() {
-  const canvas = document.getElementById("signalCanvas");
-  if (!(canvas instanceof HTMLCanvasElement)) return;
-  const context = canvas.getContext("2d");
-  if (!context) return;
-  let frame = 0;
-  const points = Array.from({ length: 28 }, (_, index) => ({
-    x: index,
-    value: 0.48 + Math.sin(index * 0.8) * 0.15 + Math.random() * 0.14,
-  }));
-
-  const draw = () => {
-    const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
-    const width = canvas.clientWidth || 560;
-    const height = canvas.clientHeight || 260;
-    if (canvas.width !== Math.floor(width * ratio) || canvas.height !== Math.floor(height * ratio)) {
-      canvas.width = Math.floor(width * ratio);
-      canvas.height = Math.floor(height * ratio);
-    }
-    context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    context.clearRect(0, 0, width, height);
-    context.strokeStyle = "rgba(168, 85, 247, .16)";
-    context.lineWidth = 1;
-    for (let x = 16; x < width; x += 44) {
-      context.beginPath();
-      context.moveTo(x, 0);
-      context.lineTo(x, height);
-      context.stroke();
-    }
-    for (let y = 30; y < height; y += 38) {
-      context.beginPath();
-      context.moveTo(0, y);
-      context.lineTo(width, y);
-      context.stroke();
-    }
-
-    const baseline = height * 0.66;
-    const step = (width - 34) / (points.length - 1);
-    const drawLine = (offset, color, amplitude) => {
-      context.beginPath();
-      points.forEach((point, index) => {
-        const x = 17 + index * step;
-        const y = baseline - (point.value - 0.45) * amplitude - offset;
-        if (index === 0) context.moveTo(x, y);
-        else context.lineTo(x, y);
-      });
-      context.strokeStyle = color;
-      context.lineWidth = 1.5;
-      context.stroke();
-    };
-    drawLine(0, "#a855f7", 160);
-    drawLine(20, "rgba(192, 132, 252, .78)", 110);
-    drawLine(-17, "rgba(255, 117, 195, .78)", 80);
-
-    const last = points[points.length - 1];
-    const lastX = 17 + (points.length - 1) * step;
-    const lastY = baseline - (last.value - 0.45) * 160;
-    context.fillStyle = "#a855f7";
-    context.beginPath();
-    context.arc(lastX, lastY, 3.5 + Math.sin(frame * 0.08) * 1.2, 0, Math.PI * 2);
-    context.fill();
-    context.font = "10px DM Mono, monospace";
-    context.fillStyle = "rgba(247, 239, 255, .58)";
-    context.fillText("signal / 76", 17, 22);
-    context.fillStyle = "#a855f7";
-    context.fillText("LIVE", width - 45, 22);
-
-    if (!prefersReducedMotion) {
-      points.shift();
-      points.push({ x: frame, value: 0.48 + Math.sin(frame * 0.06) * 0.16 + Math.random() * 0.12 });
-      frame += 1;
-      window.requestAnimationFrame(draw);
-    }
-  };
-  draw();
-}
-startSignalCanvas();
-
-/* ---------- motion reel: lightweight video-like field ---------- */
-function startMotionCanvas() {
-  const canvas = document.getElementById("motionCanvas");
-  if (!(canvas instanceof HTMLCanvasElement)) return;
-  const context = canvas.getContext("2d");
-  if (!context) return;
-  const nodes = Array.from({ length: 18 }, (_, index) => ({
-    seed: index * 1.87,
-    radius: 1.4 + (index % 4) * 0.8,
-    speed: 0.00035 + (index % 5) * 0.00008,
-  }));
-  const resize = () => {
-    const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
-    const width = canvas.clientWidth || 560;
-    const height = canvas.clientHeight || 150;
-    canvas.width = Math.floor(width * ratio);
-    canvas.height = Math.floor(height * ratio);
-    context.setTransform(ratio, 0, 0, ratio, 0, 0);
-  };
-  const draw = timestamp => {
-    const width = canvas.clientWidth || 560;
-    const height = canvas.clientHeight || 150;
-    const time = timestamp || 0;
-    context.clearRect(0, 0, width, height);
-    const gradient = context.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, "rgba(126, 34, 206, .58)");
-    gradient.addColorStop(.5, "rgba(168, 85, 247, .22)");
-    gradient.addColorStop(1, "rgba(217, 70, 166, .42)");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, width, height);
-    context.strokeStyle = "rgba(245, 208, 254, .12)";
-    context.lineWidth = 1;
-    for (let x = 24; x < width; x += 42) {
-      context.beginPath();
-      context.moveTo(x, 0);
-      context.lineTo(x, height);
-      context.stroke();
-    }
-    for (let y = 24; y < height; y += 30) {
-      context.beginPath();
-      context.moveTo(0, y);
-      context.lineTo(width, y);
-      context.stroke();
-    }
-    const points = 44;
-    const trace = (offset, amplitude, color, speed) => {
-      context.beginPath();
-      for (let index = 0; index <= points; index += 1) {
-        const x = (index / points) * width;
-        const wave = Math.sin(index * .54 + time * speed) * amplitude + Math.sin(index * .17 - time * speed * .62) * amplitude * .45;
-        const y = height * .56 + wave + offset;
-        if (index === 0) context.moveTo(x, y); else context.lineTo(x, y);
-      }
-      context.strokeStyle = color;
-      context.lineWidth = 1.5;
-      context.stroke();
-    };
-    trace(-16, 15, "rgba(255, 232, 255, .92)", .0022);
-    trace(4, 22, "rgba(255, 117, 195, .82)", .0017);
-    trace(23, 12, "rgba(192, 132, 252, .8)", .0028);
-    nodes.forEach(node => {
-      const phase = time * node.speed + node.seed;
-      const x = ((phase * 92) % (width + 42)) - 21;
-      const y = height * .5 + Math.sin(phase * 1.6) * height * .32;
-      const glow = context.createRadialGradient(x, y, 0, x, y, 14 + node.radius * 3);
-      glow.addColorStop(0, "rgba(255, 117, 195, .9)");
-      glow.addColorStop(1, "rgba(255, 117, 195, 0)");
-      context.fillStyle = glow;
-      context.beginPath();
-      context.arc(x, y, 14 + node.radius * 3, 0, Math.PI * 2);
-      context.fill();
-      context.fillStyle = "#f5d0fe";
-      context.beginPath();
-      context.arc(x, y, node.radius, 0, Math.PI * 2);
-      context.fill();
-    });
-    if (!prefersReducedMotion) window.requestAnimationFrame(draw);
-  };
-  window.addEventListener("resize", resize, { passive: true });
-  resize();
-  draw(0);
-}
-startMotionCanvas();
 
 /* ---------- infinite marquee ---------- */
 const marqueeBand = document.querySelector(".marquee-band");
@@ -355,23 +199,9 @@ const updateProgress = () => {
 window.addEventListener("scroll", updateProgress, { passive: true });
 updateProgress();
 
-/* ---------- theme toggle ---------- */
-const themeToggle = document.getElementById("themeToggle");
+/* ---------- fixed dark mode ---------- */
 const body = document.body;
-const savedTheme = window.localStorage.getItem("khaleesi-theme");
-if (savedTheme === "light" || savedTheme === "dark") body.dataset.theme = savedTheme;
-const syncThemeLabel = () => {
-  if (!themeToggle) return;
-  const isDark = body.dataset.theme !== "light";
-  themeToggle.textContent = isDark ? "◑" : "◐";
-  themeToggle.setAttribute("aria-label", isDark ? "Ativar tema claro" : "Ativar tema escuro");
-};
-syncThemeLabel();
-themeToggle?.addEventListener("click", () => {
-  body.dataset.theme = body.dataset.theme === "dark" ? "light" : "dark";
-  window.localStorage.setItem("khaleesi-theme", body.dataset.theme);
-  syncThemeLabel();
-});
+body.dataset.theme = "dark";
 
 /* ---------- mobile navigation ---------- */
 const burgerButton = document.getElementById("burgerBtn");
@@ -621,6 +451,64 @@ toolsRail?.addEventListener("touchend", () => window.setTimeout(startRail, 1300)
 toolsRail?.addEventListener("wheel", stopRail, { passive: true });
 originalToolCards.forEach(card => card.addEventListener("dragstart", event => event.preventDefault()));
 
+/* ---------- capabilities carousel: continuous presentation ---------- */
+const capabilityTrack = document.getElementById("capabilityTrack");
+const capabilityViewport = document.querySelector(".capability-viewport");
+const capabilityControls = document.querySelectorAll("[data-capability-direction]");
+const originalCapabilityCards = capabilityTrack ? [...capabilityTrack.querySelectorAll(".capability-card")] : [];
+let capabilityLoopWidth = 0;
+let capabilityOffset = 0;
+let capabilityPaused = prefersReducedMotion;
+let capabilityLastTimestamp = 0;
+
+const measureCapabilityLoop = () => {
+  if (!capabilityTrack || originalCapabilityCards.length === 0) return;
+  const firstClone = capabilityTrack.querySelector(".capability-card[data-clone=\"true\"]");
+  if (firstClone) capabilityLoopWidth = Math.max(1, firstClone.offsetLeft - originalCapabilityCards[0].offsetLeft);
+};
+
+if (capabilityTrack && originalCapabilityCards.length) {
+  const clones = originalCapabilityCards.map(card => {
+    const clone = card.cloneNode(true);
+    clone.dataset.clone = "true";
+    clone.setAttribute("aria-hidden", "true");
+    return clone;
+  });
+  capabilityTrack.append(...clones);
+  window.requestAnimationFrame(measureCapabilityLoop);
+}
+
+const moveCapabilities = direction => {
+  if (!capabilityLoopWidth || !capabilityTrack) return;
+  const card = originalCapabilityCards[0];
+  const step = card ? card.getBoundingClientRect().width + 12 : 300;
+  capabilityOffset += direction * step;
+  capabilityOffset = ((capabilityOffset % capabilityLoopWidth) + capabilityLoopWidth) % capabilityLoopWidth;
+  capabilityTrack.style.transform = `translate3d(${-capabilityOffset}px, 0, 0)`;
+};
+capabilityControls.forEach(control => control.addEventListener("click", () => moveCapabilities(control.dataset.capabilityDirection === "next" ? 1 : -1)));
+const pauseCapabilities = () => { capabilityPaused = true; };
+const resumeCapabilities = () => { if (!prefersReducedMotion) capabilityPaused = false; };
+capabilityViewport?.addEventListener("mouseenter", pauseCapabilities);
+capabilityViewport?.addEventListener("mouseleave", resumeCapabilities);
+capabilityViewport?.addEventListener("focusin", pauseCapabilities);
+capabilityViewport?.addEventListener("focusout", event => { if (!capabilityViewport.contains(event.relatedTarget)) resumeCapabilities(); });
+capabilityViewport?.addEventListener("touchstart", pauseCapabilities, { passive: true });
+capabilityViewport?.addEventListener("touchend", () => window.setTimeout(resumeCapabilities, 1200), { passive: true });
+window.addEventListener("resize", measureCapabilityLoop, { passive: true });
+const animateCapabilities = timestamp => {
+  if (!capabilityLastTimestamp) capabilityLastTimestamp = timestamp;
+  const delta = Math.min(timestamp - capabilityLastTimestamp, 48);
+  capabilityLastTimestamp = timestamp;
+  if (capabilityTrack && !capabilityPaused && capabilityLoopWidth > 0) {
+    capabilityOffset += delta * 0.022;
+    if (capabilityOffset >= capabilityLoopWidth) capabilityOffset -= capabilityLoopWidth;
+    capabilityTrack.style.transform = `translate3d(${-capabilityOffset}px, 0, 0)`;
+  }
+  window.requestAnimationFrame(animateCapabilities);
+};
+window.requestAnimationFrame(animateCapabilities);
+
 /* ---------- formula bar and active navigation ---------- */
 const sections = document.querySelectorAll("section[data-ref]");
 const formulaRef = document.getElementById("fbRef");
@@ -642,7 +530,7 @@ const commandTrigger = document.getElementById("cmdkTrigger");
 const commandInput = document.getElementById("cmdkInput");
 const commandOutput = document.getElementById("cmdkOutput");
 const commands = {
-  help: "comandos: sobre, metodo, experiencia, projetos, stack, conhecimentos, trajetoria, contato, whoami, theme, clear",
+  help: "comandos: sobre, metodo, experiencia, projetos, stack, conhecimentos, trajetoria, contato, whoami, clear",
   whoami: "khaleesi saithe — estudante de ciência de dados, automação e produto digital.",
   sobre: "ver seção #sobre",
   metodo: "ver seção #metodo",
@@ -674,12 +562,6 @@ commandInput?.addEventListener("keydown", event => {
   if (!raw) return;
   if (raw === "clear") {
     if (commandOutput) commandOutput.textContent = "";
-    commandInput.value = "";
-    return;
-  }
-  if (raw === "theme") {
-    themeToggle?.click();
-    if (commandOutput) commandOutput.textContent = `> ${raw}\ntema alternado.`;
     commandInput.value = "";
     return;
   }
@@ -736,7 +618,6 @@ commandInput?.addEventListener("keydown", event => {
       .fromTo(".hero-bottomline", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0 }, "-=0.32");
 
     gsapApi.to(".id-badge", { y: -7, rotation: 1.2, duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
-    gsapApi.to(".motion-reel", { y: -4, duration: 2.2, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 0.28 });
     gsapApi.to(".tool-svg", { y: -3, rotation: 3, duration: 1.55, repeat: -1, yoyo: true, ease: "sine.inOut", stagger: { each: 0.07, from: "random" } });
 
     if (window.matchMedia("(pointer: fine)").matches) {

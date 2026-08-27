@@ -75,7 +75,6 @@
         <a href="#contato">contato</a>
       </nav>
       <div class="fb-tools">
-        <button class="fb-icon-btn" id="themeToggle" type="button" title="Alternar tema" aria-label="Alternar tema">◑</button>
         <button class="fb-icon-btn fb-burger" id="burgerBtn" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
       </div>
     </header>
@@ -109,7 +108,7 @@
 
             <div class="hero-copy">
               <div class="hero-overline"><span>01</span> ciência de dados · automação · produto digital</div>
-              <h1 aria-label="Dados que fazem sentido no mundo real."><span class="hero-title-line">Dados que fazem</span><span class="hero-title-line">sentido no</span><em class="hero-title-line">mundo real.</em></h1>
+              <h1 aria-label="Dados que fazem sentido no mundo real."><span class="hero-title-mask"><span class="hero-title-line">Dados que fazem</span></span><span class="hero-title-mask"><span class="hero-title-line">sentido no</span></span><em class="hero-title-mask"><span class="hero-title-line">mundo real.</span></em></h1>
               <p class="hero-lede">Eu transformo rotinas, relatórios e perguntas em ferramentas claras — unindo experiência de operação, programação e curiosidade por dados.</p>
               <div class="hero-cta">
                 <a href="#projetos" class="btn fill">ver projetos <span>↗</span></a>
@@ -129,18 +128,7 @@
                 <strong class="id-name">Khaleesi Saithe</strong>
                 <span class="id-stamp">CONFERIDO ✓</span>
               </div>
-              <div class="motion-reel" aria-label="Visualização procedural em movimento">
-                <canvas id="motionCanvas" width="560" height="150" aria-hidden="true"></canvas>
-                <div class="motion-reel-label"><span>motion_field / 02</span><b>● LIVE</b></div>
-                <div class="motion-reel-caption">dado em fluxo · visual em tempo real</div>
-              </div>
-              <div class="hero-data-cluster"><span><b>02</b> produtos publicados</span><span><b>93%</b> progresso acadêmico</span><span><b>100%</b> Fecha Caixa no ar</span></div>
-              <div class="signal-window">
-                <div class="signal-window-head"><span><i></i><i></i><i></i></span><b>live_signal / 01</b><em>● online</em></div>
-                <canvas id="signalCanvas" width="560" height="260" aria-label="Visualização animada de sinais e dados"></canvas>
-                <div class="signal-readout"><span>PROBLEMA</span><b>→</b><span>DADO</span><b>→</b><span>DECISÃO</span></div>
-              </div>
-              <div class="hero-side-code"><span>shader / roxo ativo</span><b>● RENDERING</b></div>
+              <div class="hero-photo-note"><span>POR TRÁS DOS DADOS</span><b>presença humana · contexto real</b><small>São José dos Campos / SP</small></div>
             </div>
           </div>
 
@@ -189,11 +177,17 @@
         <div class="inner reveal">
           <div class="section-heading-row"><span class="cellref">B5</span><div class="kicker">/* como eu transformo problema em entrega */</div><span class="section-index">02 / 09</span></div>
           <div class="capability-intro"><h2>O que eu construo quando encontro um problema.</h2><p>Minha forma de aprender é prática: observo a operação, organizo a informação e crio uma solução que possa ser testada, explicada e melhorada.</p></div>
-          <div class="capability-grid">
-            <article class="capability-card capability-card-featured"><span class="capability-number">01</span><div class="capability-icon">↗</div><h3>Dados & análise</h3><p>Transformar planilhas e relatórios em uma leitura mais clara do que está acontecendo.</p><span class="capability-stack">Python · pandas · Power BI</span></article>
-            <article class="capability-card"><span class="capability-number">02</span><div class="capability-icon">⌁</div><h3>Automação de rotina</h3><p>Reduzir etapas manuais e criar fluxos que devolvam tempo para a operação.</p><span class="capability-stack">scripts · Streamlit · Git</span></article>
-            <article class="capability-card"><span class="capability-number">03</span><div class="capability-icon">□</div><h3>Produto digital</h3><p>Desenhar interfaces que explicam o processo e ajudam alguém a concluir uma tarefa.</p><span class="capability-stack">HTML · CSS · JavaScript</span></article>
-            <article class="capability-card"><span class="capability-number">04</span><div class="capability-icon">◌</div><h3>Fundamentos confiáveis</h3><p>Estudar redes e segurança para entender o caminho do dado antes de confiar no resultado.</p><span class="capability-stack">OSI · TCP/IP · ISO/IEC 27002</span></article>
+          <div class="capability-carousel" aria-label="Capacidades profissionais">
+            <button class="capability-control" type="button" data-capability-direction="prev" aria-label="Capacidade anterior">←</button>
+            <div class="capability-viewport">
+              <div class="capability-track" id="capabilityTrack">
+                <article class="capability-card capability-card-featured"><span class="capability-number">01</span><div class="capability-icon">↗</div><h3>Dados & análise</h3><p>Transformar planilhas e relatórios em uma leitura mais clara do que está acontecendo.</p><span class="capability-stack">Python · pandas · Power BI</span></article>
+                <article class="capability-card"><span class="capability-number">02</span><div class="capability-icon">⌁</div><h3>Automação de rotina</h3><p>Reduzir etapas manuais e criar fluxos que devolvam tempo para a operação.</p><span class="capability-stack">scripts · Streamlit · Git</span></article>
+                <article class="capability-card"><span class="capability-number">03</span><div class="capability-icon">□</div><h3>Produto digital</h3><p>Desenhar interfaces que explicam o processo e ajudam alguém a concluir uma tarefa.</p><span class="capability-stack">HTML · CSS · JavaScript</span></article>
+                <article class="capability-card"><span class="capability-number">04</span><div class="capability-icon">◌</div><h3>Fundamentos confiáveis</h3><p>Estudar redes e segurança para entender o caminho do dado antes de confiar no resultado.</p><span class="capability-stack">OSI · TCP/IP · ISO/IEC 27002</span></article>
+              </div>
+            </div>
+            <button class="capability-control" type="button" data-capability-direction="next" aria-label="Próxima capacidade">→</button>
           </div>
           <div class="capability-footer"><span>WORKFLOW / KHALEESI.SAITHE</span><strong>problema → dado → ferramenta → próxima melhoria</strong><a href="#projetos">ver os cases em andamento ↗</a></div>
         </div>
