@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Khaleesi Saithe — Ciência de Dados</title>
+    <title>Khaleesi Saithe — Portfólio de Ciência de Dados</title>
+    <meta
+      name="description"
+      content="Portfólio de Khaleesi Saithe: ciência de dados, automação e soluções digitais construídas a partir de problemas reais."
+    />
+    <meta property="og:title" content="Khaleesi Saithe — Ciência de Dados" />
+    <meta
+      property="og:description"
+      content="Experiência de negócio, programação e dados em projetos que funcionam no mundo real."
+    />
+    <meta property="og:type" content="website" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap"
@@ -139,7 +149,7 @@
       <div class="fb-formula">
         <span id="fbFormula">=HERO("Khaleesi Saithe")</span>
       </div>
-      <nav class="fb-nav">
+      <nav class="fb-nav" aria-label="Navegação principal">
         <a href="#sobre">sobre</a>
         <a href="#experiencia">experiência</a>
         <a href="#projetos">projetos</a>
@@ -178,7 +188,8 @@
       <a href="#contato">contato</a>
     </div>
 
-    <!-- ================= HERO ================= -->
+    <main id="main-content">
+      <!-- ================= HERO ================= -->
     <section
       class="hero"
       id="hero"
@@ -186,6 +197,10 @@
       data-formula='=HERO("Khaleesi Saithe")'
     >
       <div class="inner" style="width: 100%">
+        <div class="hero-masthead">
+          <span class="hero-index">PORTFÓLIO / 2026</span>
+          <span class="hero-availability"><span></span> disponível para oportunidades</span>
+        </div>
         <div class="hero-top">
           <div class="ledger-card">
             <div class="ledger-row">
@@ -195,8 +210,7 @@
                   <span class="typewriter" id="typeName">Khaleesi Saithe</span>
                 </div>
                 <div class="role">
-                  Em transição para Ciência de Dados — de conferir caixa a
-                  conferir dado.
+                  Estudante de Ciência de Dados, com experiência de operação e olhar para transformar rotina em decisão.
                 </div>
               </div>
             </div>
@@ -247,12 +261,26 @@
             <span class="id-stamp">CONFERIDO ✓</span>
           </div>
         </div>
+        <div class="hero-statement">
+          <span class="hero-statement-label">CIÊNCIA DE DADOS · AUTOMAÇÃO · PRODUTO DIGITAL</span>
+          <h1>Dados que fazem sentido no <em>mundo real.</em></h1>
+          <p>
+            Construo ferramentas que organizam informação, reduzem retrabalho e ajudam pessoas a decidir melhor — começando pelo problema que conheço de perto.
+          </p>
+        </div>
         <div class="hero-cta">
           <a href="#projetos" class="btn fill">VER PROJETOS →</a>
           <a href="#contato" class="btn ghost">FALAR COMIGO</a>
         </div>
       </div>
     </section>
+
+    <div class="marquee-band" aria-label="Áreas de atuação">
+      <div class="marquee-track">
+        <span>DATA ANALYTICS</span><b>✦</b><span>AUTOMAÇÃO</span><b>✦</b><span>PRODUTO DIGITAL</span><b>✦</b><span>PYTHON</span><b>✦</b><span>APRENDIZADO CONTÍNUO</span><b>✦</b>
+        <span aria-hidden="true">DATA ANALYTICS</span><b aria-hidden="true">✦</b><span aria-hidden="true">AUTOMAÇÃO</span><b aria-hidden="true">✦</b><span aria-hidden="true">PRODUTO DIGITAL</span><b aria-hidden="true">✦</b>
+      </div>
+    </div>
 
     <!-- ================= SOBRE ================= -->
     <section id="sobre" data-ref="B4" data-formula="=SOBRE()">
@@ -578,7 +606,8 @@
 
         <div id="projGrid">
           <!-- 1) PDFTOOLKIT — projeto em produção, com deploy ao vivo -->
-          <div class="proj-card tilt-card" data-tag="DADOS">
+          <div class="proj-card tilt-card project-featured" data-tag="DADOS">
+            <div class="project-proof"><span>CASE PRINCIPAL</span><span>PRODUTO DIGITAL</span></div>
             <div class="proj-head">
               <h3>PDFToolkit</h3>
               <div class="proj-badges">
@@ -637,10 +666,10 @@
               <div class="proj-links">
                 <a
                   href="https://github.com/khaleesisaithe/PDF-Toolkit-py"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                   >Ver no GitHub ↗</a
                 >
-                <a href="https://criadordepdf.streamlit.app/" target="_blank"
+                <a href="https://criadordepdf.streamlit.app/" target="_blank" rel="noopener noreferrer"
                   >Testar ao vivo ↗</a
                 >
               </div>
@@ -648,7 +677,8 @@
           </div>
 
           <!-- 2) PIXBEE-FECHACAIXA / CONTACAIXA — em desenvolvimento -->
-          <div class="proj-card tilt-card" data-tag="AUTOMAÇÃO">
+          <div class="proj-card tilt-card project-secondary" data-tag="AUTOMAÇÃO">
+            <div class="project-proof"><span>EM EVOLUÇÃO</span><span>VAREJO + TECNOLOGIA</span></div>
             <div class="proj-head">
               <h3>
                 ContaCaixa <span class="proj-sub">(Pixbee-FechaCaixa)</span>
@@ -710,7 +740,7 @@
               <div class="proj-links">
                 <a
                   href="https://github.com/Khaleesisaithe/Pixbee-FechaCaixa"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                   >Ver no GitHub ↗</a
                 >
               </div>
@@ -772,7 +802,7 @@
               <div class="proj-links">
                 <a
                   href="https://github.com/Khaleesisaithe/Python-estudos"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                   >Ver no GitHub ↗</a
                 >
               </div>
@@ -824,7 +854,7 @@
               <div class="proj-links">
                 <a
                   href="https://github.com/Khaleesisaithe/Meu.site-primeiro-contato-HTML-"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                   >Ver no GitHub ↗</a
                 >
               </div>
@@ -878,7 +908,7 @@
               <div class="proj-links">
                 <a
                   href="https://github.com/Khaleesisaithe/Integra-oCO"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                   >Ver no GitHub ↗</a
                 >
               </div>
@@ -914,7 +944,7 @@
       <div class="inner reveal">
         <span class="cellref">D15</span>
         <div class="kicker">/* o que já roda sem erro */</div>
-        <h2>Ferramentas do dia a dia.</h2>
+        <h2>Ferramentas que transformam ideia em prática.</h2>
         <table class="stack-table" id="stackTable">
           <tbody>
             <tr>
@@ -1316,16 +1346,16 @@
       <div class="inner reveal">
         <span class="cellref">F32</span>
         <div class="kicker">/* fecha o caixa comigo */</div>
-        <h2>Vamos conversar?</h2>
+        <h2>Se o problema é real, vamos construir a solução.</h2>
         <div class="contact-grid">
           <div class="contact-card">
             <a href="mailto:khaleesisaithen@gmail.com"
               >✉ khaleesisaithen@gmail.com <span class="arrow">→</span></a
             >
-            <a href="https://github.com/khaleesisaithe" target="_blank"
+            <a href="https://github.com/khaleesisaithe" target="_blank" rel="noopener noreferrer"
               >◐ github.com/khaleesisaithe <span class="arrow">→</span></a
             >
-            <a href="https://linkedin.com/in/khaleesisaithe" target="_blank"
+            <a href="https://linkedin.com/in/khaleesisaithe" target="_blank" rel="noopener noreferrer"
               >◑ linkedin.com/in/khaleesisaithe <span class="arrow">→</span></a
             >
           </div>
@@ -1339,9 +1369,10 @@
         </div>
       </div>
     </section>
+    </main>
 
     <footer>
-      KHALEESI SAITHE — CIÊNCIA DE DADOS · CONSTRUÍDO LINHA POR LINHA.
+      KHALEESI SAITHE — CIÊNCIA DE DADOS · IDEIAS QUE GANHAM FORMA.
     </footer>
 
     <!-- command palette -->
@@ -1363,7 +1394,7 @@
             autocomplete="off"
           />
         </div>
-        <div class="cmdk-output" id="cmdkOutput">
+        <div class="cmdk-output" id="cmdkOutput" aria-live="polite">
           audit-terminal v1.1 — digite "help" para ver os comandos.
         </div>
       </div>
