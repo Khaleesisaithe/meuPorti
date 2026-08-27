@@ -217,6 +217,7 @@ burgerButton?.addEventListener("click", () => {
   burgerButton.textContent = open ? "×" : "☰";
 });
 mobileNav?.querySelectorAll("a").forEach(link => link.addEventListener("click", closeMobileNav));
+window.addEventListener("resize", () => { if (window.innerWidth >= 761) closeMobileNav(); }, { passive: true });
 
 /* ---------- reveal and counters ---------- */
 const revealElements = document.querySelectorAll(".reveal");
@@ -585,27 +586,39 @@ const scrollIntroSteps = scrollIntro ? [...scrollIntro.querySelectorAll("[data-s
 let scrollVideoDuration = 10;
 let scrollVideoReady = false;
 let scrollUpdatePending = false;
+let scrollScrubTimeline = null;
+let scrollVideoTrigger = null;
 const clamp01 = value => Math.min(1, Math.max(0, value));
 
-const updateScrollVideo = () => {
+const updateScrollVideo = (forcedProgress, syncTimeline = true) => {
   if (!scrollIntro) return;
   const range = Math.max(1, scrollIntro.offsetHeight - window.innerHeight);
-  const progress = clamp01(-scrollIntro.getBoundingClientRect().top / range);
+  const measuredProgress = clamp01(-scrollIntro.getBoundingClientRect().top / range);
+  const progress = Number.isFinite(forcedProgress) ? clamp01(forcedProgress) : measuredProgress;
   scrollIntro.style.setProperty("--scroll-progress", progress.toFixed(4));
 
   if (scrollIntroVideo && scrollVideoReady && !prefersReducedMotion) {
     const targetTime = progress * scrollVideoDuration;
     if (Math.abs(scrollIntroVideo.currentTime - targetTime) > 0.018) scrollIntroVideo.currentTime = targetTime;
-    scrollIntroVideo.style.transform = `scale(${1.035 + progress * 0.065}) translate3d(0, ${progress * -1.8}%, 0)`;
-    scrollIntroVideo.style.opacity = String(0.92 + progress * 0.08);
   }
 
-  scrollIntroSteps.forEach(step => {
-    const threshold = Number(step.dataset.scrollStep || 0);
-    const reveal = clamp01((progress - threshold) / 0.16);
-    step.style.opacity = String(reveal);
-    step.style.transform = `translate3d(0, ${(1 - reveal) * 24}px, 0)`;
-  });
+  if (scrollScrubTimeline && syncTimeline) {
+    scrollScrubTimeline.progress(progress);
+  } else if (!scrollScrubTimeline && !prefersReducedMotion) {
+    scrollIntroVideo && (scrollIntroVideo.style.transform = `scale(${1.035 + progress * 0.065}) translate3d(0, ${progress * -1.8}%, 0)`);
+    scrollIntroVideo && (scrollIntroVideo.style.opacity = String(0.92 + progress * 0.08));
+    scrollIntroSteps.forEach(step => {
+      const threshold = Number(step.dataset.scrollStep || 0);
+      const reveal = clamp01((progress - threshold) / 0.16);
+      step.style.opacity = String(reveal);
+      step.style.transform = `translate3d(0, ${(1 - reveal) * 24}px, 0)`;
+    });
+  } else if (!scrollScrubTimeline) {
+    scrollIntroSteps.forEach(step => {
+      step.style.opacity = "1";
+      step.style.transform = "none";
+    });
+  }
 
   if (scrollVideoStatus) {
     scrollVideoStatus.textContent = progress < 0.2 ? "VIDEO READY" : progress < 0.48 ? "CONNECTING" : progress < 0.78 ? "DATA STREAM" : "SIGNAL LOCKED";
@@ -637,6 +650,7 @@ if (scrollIntroVideo && scrollIntro) {
     scrollIntro.classList.add("is-video-fallback");
     if (scrollVideoStatus) scrollVideoStatus.textContent = "POSTER MODE";
   });
+  if (scrollIntroVideo.readyState >= 1) markVideoReady();
   if (prefersReducedMotion) scrollIntroVideo.pause();
   window.addEventListener("visibilitychange", () => { if (document.hidden) scrollIntroVideo.pause(); });
   window.addEventListener("scroll", requestScrollVideoUpdate, { passive: true });
@@ -673,6 +687,48 @@ if (scrollIntroVideo && scrollIntro) {
       return;
     }
 
+    if (isScrollDrivenHero && ScrollTriggerApi && scrollIntro) {
+      const masthead = document.querySelector(".scroll-intro .hero-masthead");
+      const rail = document.querySelector(".scroll-intro .hero-rail");
+      const copy = document.querySelector(".scroll-intro .hero-copy");
+      const side = document.querySelector(".scroll-intro .hero-side");
+      const bottomline = document.querySelector(".scroll-intro .hero-bottomline");
+      const revealTargets = [masthead, rail, copy, side, bottomline].filter(Boolean);
+      gsapApi.set(revealTargets, { autoAlpha: 0, y: 26 });
+      gsapApi.set(".scroll-video-grid", { autoAlpha: 0.22, x: 0, y: 0 });
+      gsapApi.set(scrollIntroVideo, { transformOrigin: "center center", scale: 1.035, yPercent: 0, autoAlpha: 0.92 });
+
+      scrollScrubTimeline = gsapApi.timeline({ paused: true, defaults: { ease: "none" } });
+      scrollScrubTimeline
+        .addLabel("signal-start", 0)
+        .to(scrollIntroVideo, { scale: 1.11, yPercent: -1.8, autoAlpha: 1, duration: 1 }, "signal-start")
+        .to(".scroll-video-tint", { autoAlpha: 0.62, duration: 1 }, "signal-start")
+        .to(".scroll-video-grid", { autoAlpha: 0.58, xPercent: -4, yPercent: -8, duration: 1 }, "signal-start")
+        .addLabel("context", 0.15)
+        .to(masthead, { autoAlpha: 1, y: 0, duration: 0.12 }, "context")
+        .to(rail, { autoAlpha: 1, y: 0, duration: 0.14 }, 0.24)
+        .addLabel("identity", 0.34)
+        .to(copy, { autoAlpha: 1, y: 0, duration: 0.2 }, "identity")
+        .to(".hero-title-line", { autoAlpha: 1, yPercent: 0, duration: 0.18, stagger: 0.045 }, "identity+=0.05")
+        .to(side, { autoAlpha: 1, y: 0, duration: 0.18 }, 0.5)
+        .addLabel("signal-lock", 0.68)
+        .to(bottomline, { autoAlpha: 1, y: 0, duration: 0.16 }, "signal-lock")
+        .to(scrollIntroVideo, { scale: 1.19, yPercent: -3.8, duration: 0.32 }, 0.72)
+        .to(".scroll-video-grid", { autoAlpha: 0.8, xPercent: -9, yPercent: -14, duration: 0.28 }, 0.72);
+
+      scrollVideoTrigger = ScrollTriggerApi.create({
+        id: "cyberpunk-video-scrub",
+        trigger: scrollIntro,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 0.35,
+        invalidateOnRefresh: true,
+        onUpdate: self => updateScrollVideo(self.progress, true),
+        onRefresh: self => updateScrollVideo(self.progress, true)
+      });
+      updateScrollVideo(scrollVideoTrigger.progress, true);
+    }
+
     if (!isScrollDrivenHero) {
       const intro = gsapApi.timeline({ defaults: { duration: 0.72, ease: "power3.out" } });
       intro
@@ -690,6 +746,13 @@ if (scrollIntroVideo && scrollIntro) {
 
     gsapApi.to(".id-badge", { y: -7, rotation: 1.2, duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
     gsapApi.to(".tool-svg", { y: -3, rotation: 3, duration: 1.55, repeat: -1, yoyo: true, ease: "sine.inOut", stagger: { each: 0.07, from: "random" } });
+    const ambientTimeline = gsapApi.timeline({ repeat: -1, yoyo: true, defaults: { ease: "sine.inOut" } });
+    ambientTimeline
+      .to(".hero-rail-rule", { scaleY: 1.42, transformOrigin: "top center", duration: 1.9 }, 0)
+      .to(".id-stamp", { y: -5, rotation: -8, duration: 1.25 }, 0.2)
+      .to(".hero-photo-note", { y: -6, duration: 1.7 }, 0.05)
+      .to(".capability-card", { y: -6, rotation: 0.45, duration: 1.7, stagger: { each: 0.14, from: "edges" } }, 0.1)
+      .to(".capability-icon", { scale: 1.12, duration: 1.35, stagger: { each: 0.1, from: "center" } }, 0.15);
 
     if (window.matchMedia("(pointer: fine)").matches) {
       document.querySelectorAll(".hero-cta .btn").forEach(button => {
@@ -722,6 +785,26 @@ if (scrollIntroVideo && scrollIntro) {
         once: true,
         interval: 0.06,
         onEnter: batch => gsapApi.to(batch, { autoAlpha: 1, y: 0, duration: 0.62, stagger: 0.07, ease: "power2.out", overwrite: "auto" })
+      });
+
+      const motionSelectors = [
+        ".proj-card",
+        ".tool-card:not([data-clone=\"true\"])",
+        ".discipline-card",
+        ".know-card",
+        ".experience-item"
+      ];
+      motionSelectors.forEach(selector => {
+        const targets = [...document.querySelectorAll(selector)];
+        if (!targets.length) return;
+        gsapApi.set(targets, { autoAlpha: 0, y: 34, rotation: -0.7 });
+        ScrollTriggerApi.batch(targets, {
+          start: "top 92%",
+          once: true,
+          interval: 0.05,
+          batchMax: 6,
+          onEnter: batch => gsapApi.to(batch, { autoAlpha: 1, y: 0, rotation: 0, duration: 0.68, stagger: 0.075, ease: "back.out(1.12)", overwrite: "auto" })
+        });
       });
 
       if (desktop && !isScrollDrivenHero) {

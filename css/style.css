@@ -776,3 +776,93 @@ section { padding-inline: clamp(22px, 3.6vw, 64px); }
   .scroll-intro .hero-side,
   .scroll-intro .hero-bottomline { opacity: 1 !important; transform: none !important; }
 }
+
+
+/* ---------- intelligent cyberpunk keyframes ---------- */
+@keyframes cyberScanline {
+  0% { transform: translate3d(0, -115%, 0); opacity: 0; }
+  12% { opacity: .52; }
+  48% { opacity: .2; }
+  100% { transform: translate3d(0, 115%, 0); opacity: 0; }
+}
+@keyframes cyberAtmosphere {
+  0%, 100% { transform: scale(1) translate3d(0, 0, 0); opacity: .16; }
+  50% { transform: scale(1.08) translate3d(1.5%, -1%, 0); opacity: .34; }
+}
+@keyframes cyberHudFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -4px, 0); }
+}
+@keyframes cyberStatusPulse {
+  0%, 100% { opacity: .52; text-shadow: 0 0 0 rgba(0, 231, 255, 0); }
+  45% { opacity: 1; text-shadow: 0 0 16px rgba(0, 231, 255, .78); }
+}
+@keyframes cyberBeacon {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(179, 71, 255, .12), 0 0 12px rgba(179, 71, 255, .58); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 60, 172, .02), 0 0 27px rgba(255, 60, 172, .86); }
+}
+@keyframes cyberCueBob {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: .56; }
+  50% { transform: translate3d(0, 5px, 0); opacity: 1; }
+}
+@keyframes cyberMarqueeGlow {
+  0% { transform: translate3d(-130%, 0, 0); opacity: 0; }
+  20% { opacity: .4; }
+  55% { opacity: .12; }
+  100% { transform: translate3d(130%, 0, 0); opacity: 0; }
+}
+@keyframes cyberControlPulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(179, 71, 255, 0); }
+  50% { box-shadow: 0 0 22px rgba(179, 71, 255, .24); }
+}
+.scroll-video-layer::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 48%, rgba(0, 231, 255, .2), transparent 20%, rgba(179, 71, 255, .08) 38%, transparent 62%);
+  mix-blend-mode: screen;
+  animation: cyberAtmosphere 7s ease-in-out infinite;
+}
+.scroll-video-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, .18) 49.5%, rgba(0, 231, 255, .12) 50%, transparent 50.7%);
+  background-size: 100% 18%;
+  animation: cyberScanline 4.8s linear infinite;
+  mix-blend-mode: screen;
+}
+.scroll-intro-hud { animation: cyberHudFloat 5s ease-in-out infinite; }
+.scroll-intro-hud b { animation: cyberStatusPulse 2.1s ease-in-out infinite; }
+.hero-availability span { animation: cyberBeacon 1.45s ease-in-out infinite; }
+.scroll-cue { animation: cyberCueBob 1.35s ease-in-out infinite; }
+.marquee-band::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 2;
+  width: 22%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .32), transparent);
+  transform: translate3d(-130%, 0, 0);
+  animation: cyberMarqueeGlow 5.6s linear infinite;
+}
+.capability-control { animation: cyberControlPulse 2.8s ease-in-out infinite; }
+
+@media (min-width: 761px) {
+  .mobile-nav { display: none !important; transform: translate3d(0, -110%, 0) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-video-layer::before,
+  .scroll-video-layer::after,
+  .scroll-intro-hud,
+  .scroll-intro-hud b,
+  .hero-availability span,
+  .scroll-cue,
+  .marquee-band::after,
+  .capability-control { animation: none !important; }
+}
