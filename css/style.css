@@ -637,3 +637,142 @@ section { padding-inline: clamp(22px, 3.6vw, 64px); }
   .capability-card { flex-basis: 78vw; }
   .hero-photo-note { width: min(100%, 300px); }
 }
+
+
+/* ---------- scroll-driven video opening ---------- */
+.scroll-intro {
+  position: relative;
+  min-height: 285vh;
+  padding: 0;
+  overflow: clip;
+  background: #05030b;
+}
+.scroll-intro-sticky {
+  position: sticky;
+  top: 43px;
+  height: calc(100svh - 43px);
+  min-height: 620px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #05030b;
+}
+.scroll-video-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #06030d url("../video/cyber-creation-poster.jpg") center / cover no-repeat;
+}
+.scroll-intro-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: .92;
+  transform: scale(1.035) translate3d(0, 0, 0);
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+.scroll-video-tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, rgba(29, 7, 65, .91), rgba(105, 13, 139, .48) 46%, rgba(9, 3, 24, .84)), radial-gradient(circle at 52% 48%, rgba(255, 60, 172, .24), transparent 34%);
+  mix-blend-mode: screen;
+  opacity: .82;
+}
+.scroll-video-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(192, 132, 252, .12) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 231, 255, .08) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.75), transparent 88%);
+  opacity: .25;
+}
+.scroll-intro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(5, 3, 11, .16), transparent 25%, transparent 72%, rgba(5, 3, 11, .88));
+}
+.scroll-intro .hero-inner {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 1800px);
+  height: 100%;
+  min-height: 100%;
+  padding-top: clamp(22px, 4vw, 72px);
+  padding-bottom: clamp(22px, 3vw, 48px);
+}
+.scroll-intro .hero-masthead,
+.scroll-intro .hero-rail,
+.scroll-intro .hero-copy,
+.scroll-intro .hero-side,
+.scroll-intro .hero-bottomline {
+  transition: opacity 160ms linear, transform 160ms var(--ease-out);
+  will-change: transform, opacity;
+}
+.scroll-intro .hero-layout {
+  flex: 1;
+  min-height: 0;
+  align-content: center;
+}
+.scroll-intro .hero-copy,
+.scroll-intro .hero-rail,
+.scroll-intro .hero-side,
+.scroll-intro .hero-masthead,
+.scroll-intro .hero-bottomline {
+  text-shadow: 0 2px 18px rgba(0, 0, 0, .38);
+}
+.scroll-intro .hero-copy { max-width: 980px; }
+.scroll-intro .hero-side { align-content: center; }
+.scroll-intro-hud {
+  position: absolute;
+  top: 22px;
+  right: clamp(22px, 3.6vw, 64px);
+  left: clamp(22px, 3.6vw, 64px);
+  z-index: 4;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: rgba(247, 239, 255, .68);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.scroll-intro-hud b { color: var(--violet); font-weight: 400; }
+.scroll-intro.is-video-fallback .scroll-video-tint { opacity: .54; }
+.scroll-intro.is-video-fallback #scrollVideoStatus { color: var(--flag); }
+
+@media (max-width: 760px) {
+  .scroll-intro { min-height: 245vh; }
+  .scroll-intro-sticky { min-height: 570px; }
+  .scroll-intro .hero-inner { padding-top: 22px; padding-bottom: 20px; }
+  .scroll-intro .hero-layout { gap: 18px; }
+  .scroll-intro .hero h1 { font-size: clamp(54px, 14vw, 82px); }
+  .scroll-intro .hero-lede { font-size: 15px; }
+  .scroll-intro .hero-proof-row { margin-top: 24px; gap: 12px; }
+  .scroll-intro .hero-side { grid-template-columns: 1fr; }
+  .scroll-intro .id-badge { width: min(142px, 44vw); }
+  .scroll-intro .hero-photo-note { display: none; }
+  .scroll-intro-hud { top: 14px; right: 5vw; left: 5vw; font-size: 8px; }
+  .scroll-intro-hud span:last-child { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-intro { min-height: 100svh; }
+  .scroll-intro-sticky { position: relative; top: auto; }
+  .scroll-intro-video { transform: none !important; }
+  .scroll-intro .hero-masthead,
+  .scroll-intro .hero-rail,
+  .scroll-intro .hero-copy,
+  .scroll-intro .hero-side,
+  .scroll-intro .hero-bottomline { opacity: 1 !important; transform: none !important; }
+}

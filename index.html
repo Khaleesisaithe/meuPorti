@@ -91,22 +91,31 @@
     </nav>
 
     <main id="main-content">
-      <section class="hero" id="hero" data-ref="A1" data-formula='=HERO("Khaleesi Saithe")'>
+      <section class="hero scroll-intro" id="hero" data-ref="A1" data-formula='=HERO("Khaleesi Saithe")'>
+        <div class="scroll-intro-sticky">
+          <div class="scroll-video-layer" aria-hidden="true">
+            <video id="scrollIntroVideo" class="scroll-intro-video" muted playsinline preload="auto" poster="assets/video/cyber-creation-poster.jpg">
+              <source src="assets/video/cyber-creation-scroll.mp4" type="video/mp4" />
+            </video>
+            <div class="scroll-video-tint"></div>
+            <div class="scroll-video-grid"></div>
+          </div>
+          <div class="scroll-intro-hud" aria-hidden="true"><span>SCROLL / 001</span><b id="scrollVideoStatus">VIDEO READY</b><span>HUMAN × MACHINE</span></div>
         <div class="inner hero-inner">
-          <div class="hero-masthead">
+          <div class="hero-masthead" data-scroll-step="0.18">
             <span class="hero-index">PORTFÓLIO / 2026</span>
             <span class="hero-availability"><span></span> disponível para oportunidades</span>
           </div>
 
           <div class="hero-layout">
-            <aside class="hero-rail" aria-label="Contexto do portfólio">
+            <aside class="hero-rail" data-scroll-step="0.28" aria-label="Contexto do portfólio">
               <span class="hero-rail-caption">INDEX / 01</span>
               <strong>DATA<br />IS<br /><em>MATTER</em></strong>
               <span class="hero-rail-rule"></span>
               <span class="hero-rail-meta">↳ SJC / SP<br />↳ BRAZIL<br />↳ 2026</span>
             </aside>
 
-            <div class="hero-copy">
+            <div class="hero-copy" data-scroll-step="0.34">
               <div class="hero-overline"><span>01</span> ciência de dados · automação · produto digital</div>
               <h1 aria-label="Dados que fazem sentido no mundo real."><span class="hero-title-mask"><span class="hero-title-line">Dados que fazem</span></span><span class="hero-title-mask"><span class="hero-title-line">sentido no</span></span><em class="hero-title-mask"><span class="hero-title-line">mundo real.</span></em></h1>
               <p class="hero-lede">Eu transformo rotinas, relatórios e perguntas em ferramentas claras — unindo experiência de operação, programação e curiosidade por dados.</p>
@@ -121,7 +130,7 @@
               </div>
             </div>
 
-            <div class="hero-side">
+            <div class="hero-side" data-scroll-step="0.5">
               <div class="id-badge" data-motion="badge">
                 <img class="id-photo" src="assets/img/id-photo.jpg" alt="Khaleesi Saithe" />
                 <div class="id-label">CRACHÁ / 10</div>
@@ -132,7 +141,8 @@
             </div>
           </div>
 
-          <div class="hero-bottomline"><span>de operações de varejo</span><span class="line"></span><span>para data analytics</span><span class="scroll-cue">scroll para explorar ↓</span></div>
+          <div class="hero-bottomline" data-scroll-step="0.68"><span>de operações de varejo</span><span class="line"></span><span>para data analytics</span><span class="scroll-cue">scroll para explorar ↓</span></div>
+        </div>
         </div>
       </section>
 

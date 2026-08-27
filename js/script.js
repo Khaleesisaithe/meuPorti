@@ -577,6 +577,74 @@ commandInput?.addEventListener("keydown", event => {
 });
 
 
+/* ---------- scroll-driven video opening ---------- */
+const scrollIntro = document.getElementById("hero");
+const scrollIntroVideo = document.getElementById("scrollIntroVideo");
+const scrollVideoStatus = document.getElementById("scrollVideoStatus");
+const scrollIntroSteps = scrollIntro ? [...scrollIntro.querySelectorAll("[data-scroll-step]")] : [];
+let scrollVideoDuration = 10;
+let scrollVideoReady = false;
+let scrollUpdatePending = false;
+const clamp01 = value => Math.min(1, Math.max(0, value));
+
+const updateScrollVideo = () => {
+  if (!scrollIntro) return;
+  const range = Math.max(1, scrollIntro.offsetHeight - window.innerHeight);
+  const progress = clamp01(-scrollIntro.getBoundingClientRect().top / range);
+  scrollIntro.style.setProperty("--scroll-progress", progress.toFixed(4));
+
+  if (scrollIntroVideo && scrollVideoReady && !prefersReducedMotion) {
+    const targetTime = progress * scrollVideoDuration;
+    if (Math.abs(scrollIntroVideo.currentTime - targetTime) > 0.018) scrollIntroVideo.currentTime = targetTime;
+    scrollIntroVideo.style.transform = `scale(${1.035 + progress * 0.065}) translate3d(0, ${progress * -1.8}%, 0)`;
+    scrollIntroVideo.style.opacity = String(0.92 + progress * 0.08);
+  }
+
+  scrollIntroSteps.forEach(step => {
+    const threshold = Number(step.dataset.scrollStep || 0);
+    const reveal = clamp01((progress - threshold) / 0.16);
+    step.style.opacity = String(reveal);
+    step.style.transform = `translate3d(0, ${(1 - reveal) * 24}px, 0)`;
+  });
+
+  if (scrollVideoStatus) {
+    scrollVideoStatus.textContent = progress < 0.2 ? "VIDEO READY" : progress < 0.48 ? "CONNECTING" : progress < 0.78 ? "DATA STREAM" : "SIGNAL LOCKED";
+  }
+};
+
+const requestScrollVideoUpdate = () => {
+  if (scrollUpdatePending) return;
+  scrollUpdatePending = true;
+  window.requestAnimationFrame(() => {
+    scrollUpdatePending = false;
+    updateScrollVideo();
+  });
+};
+
+if (scrollIntroVideo && scrollIntro) {
+  const markVideoReady = () => {
+    scrollVideoReady = Number.isFinite(scrollIntroVideo.duration) && scrollIntroVideo.duration > 0;
+    if (scrollVideoReady) {
+      scrollVideoDuration = scrollIntroVideo.duration;
+      scrollIntroVideo.pause();
+      scrollIntro.classList.add("is-video-ready");
+      requestScrollVideoUpdate();
+    }
+  };
+  scrollIntroVideo.addEventListener("loadedmetadata", markVideoReady, { once: true });
+  scrollIntroVideo.addEventListener("loadeddata", markVideoReady, { once: true });
+  scrollIntroVideo.addEventListener("error", () => {
+    scrollIntro.classList.add("is-video-fallback");
+    if (scrollVideoStatus) scrollVideoStatus.textContent = "POSTER MODE";
+  });
+  if (prefersReducedMotion) scrollIntroVideo.pause();
+  window.addEventListener("visibilitychange", () => { if (document.hidden) scrollIntroVideo.pause(); });
+  window.addEventListener("scroll", requestScrollVideoUpdate, { passive: true });
+  window.addEventListener("resize", requestScrollVideoUpdate, { passive: true });
+  window.addEventListener("load", requestScrollVideoUpdate, { once: true });
+  requestScrollVideoUpdate();
+}
+
 /* ---------- GSAP enhancement layer ---------- */
 (function initGSAPEnhancements() {
   const gsapApi = window.gsap;
@@ -585,6 +653,7 @@ commandInput?.addEventListener("keydown", event => {
   if (ScrollTriggerApi) gsapApi.registerPlugin(ScrollTriggerApi);
 
   const media = gsapApi.matchMedia();
+  const isScrollDrivenHero = Boolean(document.querySelector(".scroll-intro"));
   media.add({
     reduceMotion: "(prefers-reduced-motion: reduce)",
     desktop: "(min-width: 900px)",
@@ -604,18 +673,20 @@ commandInput?.addEventListener("keydown", event => {
       return;
     }
 
-    const intro = gsapApi.timeline({ defaults: { duration: 0.72, ease: "power3.out" } });
-    intro
-      .fromTo(".hero-masthead", { autoAlpha: 0, y: -14 }, { autoAlpha: 1, y: 0 })
-      .fromTo(".hero-rail", { autoAlpha: 0, x: -26 }, { autoAlpha: 1, x: 0 }, "-=0.42")
-      .fromTo(".hero-copy", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0 }, "<0.08")
-      .fromTo(".hero-overline", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.48 }, "<0.16")
-      .fromTo(".hero-title-line", { autoAlpha: 0, yPercent: 115 }, { autoAlpha: 1, yPercent: 0, duration: 0.78, stagger: 0.1, ease: "power3.out" }, "<0.06")
-      .fromTo(".hero-lede", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.55 }, "<0.18")
-      .fromTo(".hero-cta", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "<0.14")
-      .fromTo(".hero-proof-row", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "<0.12")
-      .fromTo(".hero-side", { autoAlpha: 0, x: 30 }, { autoAlpha: 1, x: 0 }, "<0.08")
-      .fromTo(".hero-bottomline", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0 }, "-=0.32");
+    if (!isScrollDrivenHero) {
+      const intro = gsapApi.timeline({ defaults: { duration: 0.72, ease: "power3.out" } });
+      intro
+        .fromTo(".hero-masthead", { autoAlpha: 0, y: -14 }, { autoAlpha: 1, y: 0 })
+        .fromTo(".hero-rail", { autoAlpha: 0, x: -26 }, { autoAlpha: 1, x: 0 }, "-=0.42")
+        .fromTo(".hero-copy", { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0 }, "<0.08")
+        .fromTo(".hero-overline", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.48 }, "<0.16")
+        .fromTo(".hero-title-line", { autoAlpha: 0, yPercent: 115 }, { autoAlpha: 1, yPercent: 0, duration: 0.78, stagger: 0.1, ease: "power3.out" }, "<0.06")
+        .fromTo(".hero-lede", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.55 }, "<0.18")
+        .fromTo(".hero-cta", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "<0.14")
+        .fromTo(".hero-proof-row", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5 }, "<0.12")
+        .fromTo(".hero-side", { autoAlpha: 0, x: 30 }, { autoAlpha: 1, x: 0 }, "<0.08")
+        .fromTo(".hero-bottomline", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0 }, "-=0.32");
+    }
 
     gsapApi.to(".id-badge", { y: -7, rotation: 1.2, duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut" });
     gsapApi.to(".tool-svg", { y: -3, rotation: 3, duration: 1.55, repeat: -1, yoyo: true, ease: "sine.inOut", stagger: { each: 0.07, from: "random" } });
@@ -653,7 +724,7 @@ commandInput?.addEventListener("keydown", event => {
         onEnter: batch => gsapApi.to(batch, { autoAlpha: 1, y: 0, duration: 0.62, stagger: 0.07, ease: "power2.out", overwrite: "auto" })
       });
 
-      if (desktop) {
+      if (desktop && !isScrollDrivenHero) {
         gsapApi.to(".hero-rail", { y: -18, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 } });
         gsapApi.to(".hero-side", { y: 18, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 } });
         gsapApi.to(".hero-copy h1", { y: -10, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 } });
