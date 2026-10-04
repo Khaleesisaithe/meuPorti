@@ -10,6 +10,10 @@ O projeto pode ser aberto diretamente no navegador e publicado em serviços de h
 
 🔗 [Ver portfólio ao vivo](https://khaleesi-portifolio.vercel.app/)
 
+🔗 [Brasa & Ponto, app de pedidos](https://delivery-app-demo-khaleesi.vercel.app/)
+
+🔗 [Delivery.Pro, landing page](https://delivery-pro-lp.vercel.app/)
+
 🔗 [Ver repositório no GitHub](https://github.com/khaleesisaithe)
 
 ## ✨ Funcionalidades
@@ -18,7 +22,7 @@ O projeto pode ser aberto diretamente no navegador e publicado em serviços de h
 
 🧰 **Stack de habilidades** — exibição das tecnologias e dos respectivos níveis de domínio por meio de barras de progresso
 
-🗂️ **Projetos filtráveis** — organização dos projetos por categoria, com cards individuais e status de acompanhamento
+🗂️ **Projetos filtráveis** — organização dos projetos por categoria, com cards individuais, links de deploy e status de acompanhamento
 
 🖥️ **Previews de terminal** — mini janelas de terminal criadas em HTML e CSS para representar visualmente os projetos
 

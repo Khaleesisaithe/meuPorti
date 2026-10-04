@@ -225,6 +225,9 @@ h3 { font-family: var(--serif); }
 .proj-card { position: relative; min-width: 0; overflow: hidden; border: 1px solid var(--line); background: var(--paper-raised); transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out), transform 180ms var(--ease-out); will-change: transform; }
 .proj-card:hover { border-color: var(--verified); box-shadow: 8px 8px 0 var(--verified); }
 .project-featured { grid-column: span 2; border-color: var(--verified); }
+.project-new { border-color: color-mix(in srgb, var(--flag) 58%, var(--line)); }
+.project-new .project-proof span:first-child { color: var(--flag); }
+.project-new:hover { border-color: var(--flag); box-shadow: 8px 8px 0 var(--flag); }
 .project-featured .proj-body { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 0 26px; }
 .project-featured .proj-body p, .project-featured .feat-list { grid-column: 1; }
 .project-featured .stack-strip { grid-column: 2; grid-row: 1; align-content: start; }
