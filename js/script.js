@@ -91,3 +91,19 @@ document.querySelectorAll('.experience-trigger').forEach(item => {
 modalClose?.addEventListener('click', closeExperience);
 experienceModal?.addEventListener('click', event => { if (event.target.matches('[data-modal-close]')) closeExperience(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeExperience(); });
+
+// Direção da rolagem: usa classes nas seções para diferenciar entrada subindo e descendo.
+let lastScrollY = window.scrollY;
+let scrollTicking = false;
+const updateScrollDirection = () => {
+  const direction = window.scrollY >= lastScrollY ? 'down' : 'up';
+  document.body.classList.toggle('is-scrolling-down', direction === 'down');
+  document.body.classList.toggle('is-scrolling-up', direction === 'up');
+  document.querySelectorAll('section').forEach(section => {
+    section.classList.toggle('section-scroll-down', direction === 'down');
+    section.classList.toggle('section-scroll-up', direction === 'up');
+  });
+  lastScrollY = window.scrollY;
+  scrollTicking = false;
+};
+window.addEventListener('scroll', () => { if (!scrollTicking) { window.requestAnimationFrame(updateScrollDirection); scrollTicking = true; } }, { passive: true });
