@@ -107,3 +107,22 @@ const updateScrollDirection = () => {
   scrollTicking = false;
 };
 window.addEventListener('scroll', () => { if (!scrollTicking) { window.requestAnimationFrame(updateScrollDirection); scrollTicking = true; } }, { passive: true });
+
+// Galerias de prints: alternância automática e controles acessíveis em cada card.
+document.querySelectorAll('[data-gallery]').forEach(gallery => {
+  const slides = [...gallery.querySelectorAll('.gallery-slide')];
+  const count = gallery.querySelector('.gallery-count');
+  const prev = gallery.querySelector('.gallery-prev');
+  const next = gallery.querySelector('.gallery-next');
+  let current = 0;
+  const show = index => {
+    current = (index + slides.length) % slides.length;
+    slides.forEach((slide, i) => slide.classList.toggle('is-active', i === current));
+    if (count) count.textContent = `${String(current + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+  };
+  prev?.addEventListener('click', event => { event.preventDefault(); event.stopPropagation(); show(current - 1); });
+  next?.addEventListener('click', event => { event.preventDefault(); event.stopPropagation(); show(current + 1); });
+  let timer = setInterval(() => show(current + 1), 4300);
+  gallery.addEventListener('mouseenter', () => clearInterval(timer));
+  gallery.addEventListener('mouseleave', () => { timer = setInterval(() => show(current + 1), 4300); });
+});
