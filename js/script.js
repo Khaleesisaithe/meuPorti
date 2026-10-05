@@ -6,8 +6,7 @@ if ('IntersectionObserver' in window) {
   const revealObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        observer.unobserve(entry.target);
+        entry.target.classList.toggle('in', entry.isIntersecting);
       }
     });
   }, { threshold: 0.08, rootMargin: '0px 0px -40px' });
